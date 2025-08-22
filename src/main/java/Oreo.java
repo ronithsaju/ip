@@ -85,6 +85,18 @@ public class Oreo {
                 System.out.println(t);
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 horizontalLine();
+            } else if (userInput.startsWith("delete")) {
+                int taskNum = Integer.parseInt(
+                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
+
+                Task t = tasks.get(taskNum - 1);
+                tasks.remove(t);
+
+                horizontalLine();
+                System.out.println("Noted. I've removed this task:");
+                System.out.println(t);
+                System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                horizontalLine();
             } else {
                 horizontalLine();
                 System.out.println("Invalid input!!");
