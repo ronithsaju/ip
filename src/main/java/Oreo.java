@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Oreo {
@@ -6,8 +7,9 @@ public class Oreo {
     }
 
     public static void main(String[] args) {
-        int count = 1;
-        String[] tasks = new String[100];
+        //int count = 1;
+        //String[] tasks = new String[100];
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner input = new Scanner(System.in);
 
         horizontalLine();
@@ -25,20 +27,46 @@ public class Oreo {
                 break;
             } else if (userInput.equals("list")) {
                 horizontalLine();
-                for (int i = 1; i < count; i++) {
-                    System.out.println(i + ". " + tasks[i]);
+                System.out.println("Here are the tasks in your list:");
+                for (Task t : tasks) {
+                    System.out.println((tasks.indexOf(t) + 1) + ".[" + t.getCompletionStatusIcon() + "] " + t.name);
                 }
+                horizontalLine();
+                continue;
+            } else if (userInput.startsWith("mark")) {
+                int taskNum = Integer.parseInt(
+                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
+
+                Task t = tasks.get(taskNum - 1);
+                t.isCompleted = true;
+
+                horizontalLine();
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("[" + t.getCompletionStatusIcon() + "] " + t.name);
+                horizontalLine();
+                continue;
+            } else if (userInput.startsWith("unmark")) {
+                int taskNum = Integer.parseInt(
+                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
+
+                Task t = tasks.get(taskNum - 1);
+                t.isCompleted = false;
+
+                horizontalLine();
+                System.out.println("OK, I've marked this task as not done yet:");
+                System.out.println("[" + t.getCompletionStatusIcon() + "] " + t.name);
                 horizontalLine();
                 continue;
             }
 
-            tasks[count] = userInput;
+            //tasks[count] = userInput;
+            tasks.add(new Task(userInput));
 
             horizontalLine();
             System.out.println("added: " + userInput);
             horizontalLine();
 
-            count++;
+            //count++;
         }
     }
 }
