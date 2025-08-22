@@ -10,4 +10,9 @@ public class Task {
     public String getCompletionStatusIcon() {
         return (isCompleted ? "X" : " "); // mark done task with X
     }
+
+    @Override
+    public String toString() {
+        return "[" + getCompletionStatusIcon() + "] " + name;
+    }
 }
