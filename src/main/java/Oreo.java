@@ -6,7 +6,7 @@ public class Oreo {
         System.out.println("____________________________________________________________");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         ArrayList<Task> tasks = new ArrayList<>();
         Scanner input = new Scanner(System.in);
 
@@ -64,6 +64,7 @@ public class Oreo {
             } else if (userInput.startsWith("deadline")) {
                 String name = userInput.substring(9, userInput.indexOf("/by"));
                 String by = userInput.substring(userInput.indexOf("/by") + 3);
+
                 Task t = new Deadline(name, by);
                 tasks.add(t);
 
@@ -86,7 +87,7 @@ public class Oreo {
                 horizontalLine();
             } else {
                 horizontalLine();
-                System.out.println("Invalid input :(");
+                System.out.println("Invalid input!!");
                 System.out.println("Please write a todo, deadline or event task");
                 horizontalLine();
             }
