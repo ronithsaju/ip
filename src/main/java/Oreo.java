@@ -8,15 +8,15 @@ public class Oreo {
 
     public static void main(String[] args){
         ArrayList<Task> tasks = new ArrayList<>();
-        Scanner input = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
         horizontalLine();
         System.out.println("Hello! I'm Oreo");
         System.out.println("What can I do for you?");
         horizontalLine();
 
-        while (true) {
-            String userInput = input.nextLine();
+        while (sc.hasNextLine()) {
+            String userInput = sc.nextLine();
 
             if (userInput.equals("bye")) {
                 horizontalLine();
