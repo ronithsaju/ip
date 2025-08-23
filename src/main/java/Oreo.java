@@ -2,11 +2,22 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Oreo {
+    // basic function to print out a single horizontal line
     public static void horizontalLine() {
         System.out.println("____________________________________________________________");
     }
 
-    public static void main(String[] args){
+    // basic function to remove all non-numbers from input
+    // with exception thrown if there is no number in input
+    public static int extractNumber(String input) throws OreoException {
+        try {
+            return Integer.parseInt(input.replaceAll("[^0-9]", ""));
+        } catch (NumberFormatException e) {
+            throw new OreoException("Please provide a valid task number.");
+        }
+    }
+
+    public static void main(String[] args) throws OreoException {
         ArrayList<Task> tasks = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
 
@@ -31,9 +42,7 @@ public class Oreo {
                 }
                 horizontalLine();
             } else if (userInput.startsWith("mark")) {
-                int taskNum = Integer.parseInt(
-                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
-
+                int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = true;
 
@@ -42,9 +51,7 @@ public class Oreo {
                 System.out.println(t);
                 horizontalLine();
             } else if (userInput.startsWith("unmark")) {
-                int taskNum = Integer.parseInt(
-                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
-
+                int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = false;
 
@@ -62,33 +69,38 @@ public class Oreo {
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 horizontalLine();
             } else if (userInput.startsWith("deadline")) {
-                String name = userInput.substring(9, userInput.indexOf("/by"));
-                String by = userInput.substring(userInput.indexOf("/by") + 3);
+                try {
+                    String name = userInput.substring(9, userInput.indexOf("/by"));
+                    String by = userInput.substring(userInput.indexOf("/by") + 3);
+                    Task t = new Deadline(name, by);
+                    tasks.add(t);
 
-                Task t = new Deadline(name, by);
-                tasks.add(t);
-
-                horizontalLine();
-                System.out.println("Got it. I've added this task:");
-                System.out.println(t);
-                System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                horizontalLine();
+                    horizontalLine();
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println(t);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    horizontalLine();
+                } catch (Exception e) {
+                    throw new OreoException("No name or by date provided for deadline :(");
+                }
             } else if (userInput.startsWith("event")) {
-                String name = userInput.substring(6, userInput.indexOf("/from"));
-                String from = userInput.substring(userInput.indexOf("/from") + 5, userInput.indexOf("/to"));
-                String to = userInput.substring(userInput.indexOf("/to") + 3);
-                Task t = new Event(name, from, to);
-                tasks.add(t);
+                try {
+                    String name = userInput.substring(6, userInput.indexOf("/from"));
+                    String from = userInput.substring(userInput.indexOf("/from") + 5, userInput.indexOf("/to"));
+                    String to = userInput.substring(userInput.indexOf("/to") + 3);
+                    Task t = new Event(name, from, to);
+                    tasks.add(t);
 
-                horizontalLine();
-                System.out.println("Got it. I've added this task:");
-                System.out.println(t);
-                System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                horizontalLine();
+                    horizontalLine();
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println(t);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    horizontalLine();
+                } catch (Exception e) {
+                    throw new OreoException("No name or from/to date provided for event :(");
+                }
             } else if (userInput.startsWith("delete")) {
-                int taskNum = Integer.parseInt(
-                        userInput.replaceAll("[^0-9]", "")); // removes all non-numbers from input
-
+                int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 tasks.remove(t);
 
@@ -99,9 +111,7 @@ public class Oreo {
                 horizontalLine();
             } else {
                 horizontalLine();
-                System.out.println("Invalid input!!");
-                System.out.println("Please write a todo, deadline or event task");
-                horizontalLine();
+                throw new OreoException("Invalid input! Please write a todo, deadline or event task");
             }
         }
     }
