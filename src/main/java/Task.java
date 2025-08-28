@@ -4,11 +4,15 @@ public class Task {
 
     public Task(String name) {
         this.name = name;
-        this.isCompleted = false;
     }
 
     public String getCompletionStatusIcon() {
         return (isCompleted ? "X" : " "); // mark done task with X
+    }
+
+    public String saveFormat() {
+        int completionStatus = isCompleted ? 1 : 0;
+        return completionStatus + "|" + name;
     }
 
     @Override

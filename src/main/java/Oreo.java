@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,8 +22,78 @@ public class Oreo {
         }
     }
 
+    public static void loadTasks(ArrayList<Task> tasks) {
+        try {
+            readTasksFromFile(tasks);
+        } catch (FileNotFoundException | OreoException e) {
+            System.out.println("Issue reading tasks: " + e.getMessage());
+        }
+    }
+
+    // extracts info from the formatted saved tasks file and loads it
+    public static void readTasksFromFile(ArrayList<Task> tasks) throws FileNotFoundException, OreoException {
+        File f = new File("./data/oreo.txt");
+        if (!f.exists()) return; // skips if there is no saved tasks file
+        Scanner s = new Scanner(f);
+        while (s.hasNext())  {
+            String task = s.nextLine();
+            boolean isCompleted;
+            String name;
+            Task t;
+            switch (task.charAt(0)) {
+                case 'T':
+                    name = task.substring(4);
+                    t = new Todo(name);
+                    isCompleted = (task.charAt(2) == '1');
+                    t.isCompleted = isCompleted;
+                    tasks.add(t);
+                    break;
+                case 'D':
+                    name = task.substring(4,  task.lastIndexOf("|"));
+                    String by = task.substring(task.lastIndexOf("|") + 1);
+                    t = new Deadline(name, by);
+                    isCompleted = (task.charAt(2) == '1');
+                    t.isCompleted = isCompleted;
+                    tasks.add(t);
+                    break;
+                case 'E':
+                    name = task.substring(4,  task.indexOf("|", 8));
+                    String from = task.substring(task.indexOf("|", 8) + 1, task.lastIndexOf("|"));
+                    String to = task.substring(task.lastIndexOf("|") + 1);
+                    t = new Event(name, from, to);
+                    isCompleted = (task.charAt(2) == '1');
+                    t.isCompleted = isCompleted;
+                    tasks.add(t);
+                    break;
+                default:
+                    throw new OreoException("The saved file of tasks has an invalid format :o");
+            }
+        }
+    }
+
+    public static void saveTasks(ArrayList<Task> updated_tasks) {
+        try {
+            writeTasksToFile(updated_tasks);
+        } catch (IOException e) {
+            System.out.println("Issue saving tasks: " + e.getMessage());
+        }
+    }
+
+    // formats and saves the tasks so far
+    public static void writeTasksToFile(ArrayList<Task> updated_tasks) throws IOException {
+        FileWriter fw = new FileWriter("./data/oreo.txt");
+        StringBuilder textToAdd = new StringBuilder();
+        for (Task t : updated_tasks) {
+            textToAdd.append(t.saveFormat());
+            textToAdd.append(System.lineSeparator());
+        }
+        fw.write(String.valueOf(textToAdd));
+        fw.close();
+    }
+
     public static void main(String[] args) throws OreoException {
         ArrayList<Task> tasks = new ArrayList<>();
+        loadTasks(tasks);
         Scanner sc = new Scanner(System.in);
 
         horizontalLine();
@@ -45,6 +120,7 @@ public class Oreo {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = true;
+                saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Nice! I've marked this task as done:");
@@ -54,6 +130,7 @@ public class Oreo {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = false;
+                saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("OK, I've marked this task as not done yet:");
@@ -62,6 +139,7 @@ public class Oreo {
             } else if (userInput.startsWith("todo")) {
                 Task t = new Todo(userInput.substring(5));
                 tasks.add(t);
+                saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Got it. I've added this task:");
@@ -70,10 +148,11 @@ public class Oreo {
                 horizontalLine();
             } else if (userInput.startsWith("deadline")) {
                 try {
-                    String name = userInput.substring(9, userInput.indexOf("/by"));
-                    String by = userInput.substring(userInput.indexOf("/by") + 3);
+                    String name = userInput.substring(9, userInput.indexOf("/by") -  1);
+                    String by = userInput.substring(userInput.indexOf("/by") + 4);
                     Task t = new Deadline(name, by);
                     tasks.add(t);
+                    saveTasks(tasks);
 
                     horizontalLine();
                     System.out.println("Got it. I've added this task:");
@@ -85,11 +164,12 @@ public class Oreo {
                 }
             } else if (userInput.startsWith("event")) {
                 try {
-                    String name = userInput.substring(6, userInput.indexOf("/from"));
-                    String from = userInput.substring(userInput.indexOf("/from") + 5, userInput.indexOf("/to"));
-                    String to = userInput.substring(userInput.indexOf("/to") + 3);
+                    String name = userInput.substring(6, userInput.indexOf("/from") - 1);
+                    String from = userInput.substring(userInput.indexOf("/from") + 6, userInput.indexOf("/to") - 1);
+                    String to = userInput.substring(userInput.indexOf("/to") + 4);
                     Task t = new Event(name, from, to);
                     tasks.add(t);
+                    saveTasks(tasks);
 
                     horizontalLine();
                     System.out.println("Got it. I've added this task:");
@@ -103,6 +183,7 @@ public class Oreo {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 tasks.remove(t);
+                saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Noted. I've removed this task:");
