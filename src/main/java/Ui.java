@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Ui {
@@ -30,11 +29,11 @@ public class Ui {
         horizontalLine();
     }
 
-    public void listMessage(ArrayList<Task> tasks) {
+    public void listMessage(TaskList tl) {
         horizontalLine();
         System.out.println("Here are the tasks in your list:");
-        for (Task t : tasks) {
-            System.out.println((tasks.indexOf(t) + 1) + "." + t);
+        for (Task task : tl.getTasks()) {
+            System.out.println((tl.getTaskIndex(task) + 1) + "." + task);
         }
         horizontalLine();
     }
@@ -54,20 +53,19 @@ public class Ui {
     }
 
     // used for todo, deadline and event tasks
-    public void taskMessage(Task t, ArrayList<Task> tasks) {
+    public void taskMessage(Task t, TaskList tl) {
         horizontalLine();
         System.out.println("Got it. I've added this task:");
         System.out.println(t);
-        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+        System.out.println("Now you have " + tl.getSize() + " tasks in the list.");
         horizontalLine();
     }
 
-    public void deleteMessage(Task t, ArrayList<Task> tasks) {
+    public void deleteMessage(Task t, TaskList tl) {
         horizontalLine();
         System.out.println("Noted. I've removed this task:");
         System.out.println(t);
-        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+        System.out.println("Now you have " + tl.getSize() + " tasks in the list.");
         horizontalLine();
     }
-
 }

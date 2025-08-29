@@ -1,19 +1,17 @@
-import java.util.ArrayList;
-
 public class Oreo {
     private final Storage storage;
     private final Ui ui;
     private final Parser parser;
-    private final ArrayList<Task> tasks;
+    private final TaskList tasks;
 
     public Oreo(String filePath) throws OreoException {
         ui = new Ui();
         storage = new Storage(filePath);
         parser = new Parser();
         if (storage.loadTasks() != null) { // if a saved tasks file exists
-            tasks = new ArrayList<>(storage.loadTasks());
+            tasks = new TaskList(storage.loadTasks());
         } else {
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
         }
     }
 

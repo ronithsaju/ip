@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -12,7 +10,7 @@ public class Parser {
         this.isExit = false;
     }
 
-    public void parse(String userInput, ArrayList<Task> tasks, Ui ui, Storage storage) throws OreoException {
+    public void parse(String userInput, TaskList tasks, Ui ui, Storage storage) throws OreoException {
         if (userInput.equals("bye")) {
             ui.byeMessage();
             isExit = true;
@@ -20,19 +18,19 @@ public class Parser {
             ui.listMessage(tasks);
         } else if (userInput.startsWith("mark")) {
             int taskNum = extractNumber(userInput);
-            Task t = tasks.get(taskNum - 1);
+            Task t = tasks.getTask(taskNum - 1);
             t.isCompleted = true;
             storage.saveTasks(tasks);
             ui.markMessage(t);
         } else if (userInput.startsWith("unmark")) {
             int taskNum = extractNumber(userInput);
-            Task t = tasks.get(taskNum - 1);
+            Task t = tasks.getTask(taskNum - 1);
             t.isCompleted = false;
             storage.saveTasks(tasks);
             ui.unmarkMessage(t);
         } else if (userInput.startsWith("todo")) {
             Task t = new Todo(userInput.substring(5));
-            tasks.add(t);
+            tasks.addTask(t);
             storage.saveTasks(tasks);
             ui.taskMessage(t, tasks);
         } else if (userInput.startsWith("deadline")) {
@@ -43,7 +41,7 @@ public class Parser {
                 try {
                     LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
                     Task t = new Deadline(name, byDateTime);
-                    tasks.add(t);
+                    tasks.addTask(t);
                     storage.saveTasks(tasks);
                     ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
@@ -67,7 +65,7 @@ public class Parser {
                     LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
                     LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
                     Task t = new Event(name, fromDateTime, toDateTime);
-                    tasks.add(t);
+                    tasks.addTask(t);
                     storage.saveTasks(tasks);
                     ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
@@ -83,8 +81,8 @@ public class Parser {
             }
         } else if (userInput.startsWith("delete")) {
             int taskNum = extractNumber(userInput);
-            Task t = tasks.get(taskNum - 1);
-            tasks.remove(t);
+            Task t = tasks.getTask(taskNum - 1);
+            tasks.removeTask(t);
             storage.saveTasks(tasks);
             ui.deleteMessage(t, tasks);
         } else {

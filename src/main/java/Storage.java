@@ -71,19 +71,19 @@ public class Storage {
         return tasks;
     }
 
-    public void saveTasks(ArrayList<Task> updated_tasks) throws OreoException {
+    public void saveTasks(TaskList tl) throws OreoException {
         try {
-            writeTasksToFile(updated_tasks);
+            writeTasksToFile(tl);
         } catch (IOException e) {
             throw new OreoException("Issue saving tasks.", e);
         }
     }
 
     // formats and saves the tasks so far
-    private void writeTasksToFile(ArrayList<Task> updated_tasks) throws IOException {
+    private void writeTasksToFile(TaskList tl) throws IOException {
         FileWriter fw = new FileWriter(this.filePath);
         StringBuilder textToAdd = new StringBuilder();
-        for (Task t : updated_tasks) {
+        for (Task t : tl.getTasks()) {
             textToAdd.append(t.saveFormat());
             textToAdd.append(System.lineSeparator());
         }
