@@ -1,6 +1,16 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Ui {
+    private final Scanner sc;
+
+    public Ui() {
+        this.sc = new Scanner(System.in);
+    }
+
+    public String readCommand() {
+        return sc.nextLine();
+    }
 
     // basic function to print out a single horizontal line
     public void horizontalLine() {
