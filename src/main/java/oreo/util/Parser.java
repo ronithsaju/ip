@@ -1,3 +1,12 @@
+package oreo.util;
+
+import oreo.OreoException;
+import oreo.ui.Ui;
+import oreo.task.Deadline;
+import oreo.task.Event;
+import oreo.task.Task;
+import oreo.task.Todo;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -19,13 +28,13 @@ public class Parser {
         } else if (userInput.startsWith("mark")) {
             int taskNum = extractNumber(userInput);
             Task t = tasks.getTask(taskNum - 1);
-            t.isCompleted = true;
+            t.setIsCompleted(true);
             storage.saveTasks(tasks);
             ui.markMessage(t);
         } else if (userInput.startsWith("unmark")) {
             int taskNum = extractNumber(userInput);
             Task t = tasks.getTask(taskNum - 1);
-            t.isCompleted = false;
+            t.setIsCompleted(false);
             storage.saveTasks(tasks);
             ui.unmarkMessage(t);
         } else if (userInput.startsWith("todo")) {

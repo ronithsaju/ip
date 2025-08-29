@@ -1,3 +1,11 @@
+package oreo.util;
+
+import oreo.OreoException;
+import oreo.task.Deadline;
+import oreo.task.Event;
+import oreo.task.Task;
+import oreo.task.Todo;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -41,7 +49,7 @@ public class Storage {
                     name = task.substring(4);
                     t = new Todo(name);
                     isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
+                    t.setIsCompleted(isCompleted);
                     tasks.add(t);
                     break;
                 case 'D':
@@ -50,7 +58,7 @@ public class Storage {
                     LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
                     t = new Deadline(name, byDateTime);
                     isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
+                    t.setIsCompleted(isCompleted);
                     tasks.add(t);
                     break;
                 case 'E':
@@ -61,7 +69,7 @@ public class Storage {
                     LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
                     t = new Event(name, fromDateTime, toDateTime);
                     isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
+                    t.setIsCompleted(isCompleted);
                     tasks.add(t);
                     break;
                 default:

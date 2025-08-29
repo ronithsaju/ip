@@ -1,3 +1,8 @@
+package oreo.ui;
+
+import oreo.task.Task;
+import oreo.util.TaskList;
+
 import java.util.Scanner;
 
 public class Ui {
