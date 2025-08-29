@@ -1,6 +1,1 @@
-T|0|borrow book
-D|1|return book|2002-11-17
-E|0|project meeting|2002-11-17|2002-11-18
-D|0|return book|2025-12-17
-D|1|sleep|2025-09-12
-E|0|meeting|2025-08-29|2025-08-29
+D|0|return book|2002-11-17

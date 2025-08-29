@@ -1,8 +1,3 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,8 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Oreo {
+    private final Storage storage;
+    private ArrayList<Task> tasks;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    private static final DateTimeFormatter READ_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // basic function to print out a single horizontal line
     public static void horizontalLine() {
@@ -29,81 +25,16 @@ public class Oreo {
         }
     }
 
-    public static void loadTasks(ArrayList<Task> tasks) {
-        try {
-            readTasksFromFile(tasks);
-        } catch (FileNotFoundException | OreoException e) {
-            System.out.println("Issue reading tasks: " + e.getMessage());
+    public Oreo(String filePath) throws OreoException {
+        storage = new Storage(filePath);
+        if (storage.loadTasks() != null) { // if a saved tasks file exists
+            tasks = new ArrayList<>(storage.loadTasks());
+        } else {
+            tasks = new ArrayList<>();
         }
     }
 
-    // extracts info from the formatted saved tasks file and loads it
-    public static void readTasksFromFile(ArrayList<Task> tasks) throws FileNotFoundException, OreoException {
-        File f = new File("./data/oreo.txt");
-        if (!f.exists()) return; // skips if there is no saved tasks file
-        Scanner s = new Scanner(f);
-        while (s.hasNext())  {
-            String task = s.nextLine();
-            boolean isCompleted;
-            String name;
-            Task t;
-            switch (task.charAt(0)) {
-                case 'T':
-                    name = task.substring(4);
-                    t = new Todo(name);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
-                    tasks.add(t);
-                    break;
-                case 'D':
-                    name = task.substring(4,  task.lastIndexOf("|"));
-                    String byStr = task.substring(task.lastIndexOf("|") + 1);
-                    LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
-                    t = new Deadline(name, byDateTime);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
-                    tasks.add(t);
-                    break;
-                case 'E':
-                    name = task.substring(4,  task.indexOf("|", 8));
-                    String fromStr = task.substring(task.indexOf("|", 8) + 1, task.lastIndexOf("|"));
-                    String toStr = task.substring(task.lastIndexOf("|") + 1);
-                    LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
-                    LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
-                    t = new Event(name, fromDateTime, toDateTime);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.isCompleted = isCompleted;
-                    tasks.add(t);
-                    break;
-                default:
-                    throw new OreoException("The saved file of tasks has an invalid format :o");
-            }
-        }
-    }
-
-    public static void saveTasks(ArrayList<Task> updated_tasks) {
-        try {
-            writeTasksToFile(updated_tasks);
-        } catch (IOException e) {
-            System.out.println("Issue saving tasks: " + e.getMessage());
-        }
-    }
-
-    // formats and saves the tasks so far
-    public static void writeTasksToFile(ArrayList<Task> updated_tasks) throws IOException {
-        FileWriter fw = new FileWriter("./data/oreo.txt");
-        StringBuilder textToAdd = new StringBuilder();
-        for (Task t : updated_tasks) {
-            textToAdd.append(t.saveFormat());
-            textToAdd.append(System.lineSeparator());
-        }
-        fw.write(String.valueOf(textToAdd));
-        fw.close();
-    }
-
-    public static void main(String[] args) throws Exception {
-        ArrayList<Task> tasks = new ArrayList<>();
-        loadTasks(tasks);
+    public void run() throws Exception {
         Scanner sc = new Scanner(System.in);
 
         horizontalLine();
@@ -130,7 +61,7 @@ public class Oreo {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = true;
-                saveTasks(tasks);
+                storage.saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Nice! I've marked this task as done:");
@@ -140,7 +71,7 @@ public class Oreo {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 t.isCompleted = false;
-                saveTasks(tasks);
+                storage.saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("OK, I've marked this task as not done yet:");
@@ -149,7 +80,7 @@ public class Oreo {
             } else if (userInput.startsWith("todo")) {
                 Task t = new Todo(userInput.substring(5));
                 tasks.add(t);
-                saveTasks(tasks);
+                storage.saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Got it. I've added this task:");
@@ -165,7 +96,7 @@ public class Oreo {
                         LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
                         Task t = new Deadline(name, byDateTime);
                         tasks.add(t);
-                        saveTasks(tasks);
+                        storage.saveTasks(tasks);
 
                         horizontalLine();
                         System.out.println("Got it. I've added this task:");
@@ -174,10 +105,14 @@ public class Oreo {
                         horizontalLine();
                     } catch (DateTimeParseException e) {
                         throw new OreoException("Invalid date format. " +
-                                "Please follow DD/MM/YYYY. e.g. 17/11/2002");
+                                "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
                     }
+                } catch (OreoException ex) {
+                    // rethrow DateTimeParseException
+                    throw ex;
                 } catch (Exception ex) {
-                    throw new Exception("Failed to create deadline task", ex);
+                    //unexpected errors
+                    throw new OreoException("Failed to create deadline task", ex);
                 }
             } else if (userInput.startsWith("event")) {
                 try {
@@ -190,7 +125,7 @@ public class Oreo {
                         LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
                         Task t = new Event(name, fromDateTime, toDateTime);
                         tasks.add(t);
-                        saveTasks(tasks);
+                        storage.saveTasks(tasks);
 
                         horizontalLine();
                         System.out.println("Got it. I've added this task:");
@@ -199,16 +134,20 @@ public class Oreo {
                         horizontalLine();
                     } catch (DateTimeParseException e) {
                         throw new OreoException("Invalid date format. " +
-                                "Please follow DD/MM/YYYY. e.g. 17/11/2002");
+                                "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
                     }
+                } catch (OreoException ex) {
+                    // rethrow DateTimeParseException
+                    throw ex;
                 } catch (Exception ex) {
-                    throw new Exception("Failed to create deadline task", ex);
+                    //unexpected errors
+                    throw new OreoException("Failed to create event task", ex);
                 }
             } else if (userInput.startsWith("delete")) {
                 int taskNum = extractNumber(userInput);
                 Task t = tasks.get(taskNum - 1);
                 tasks.remove(t);
-                saveTasks(tasks);
+                storage.saveTasks(tasks);
 
                 horizontalLine();
                 System.out.println("Noted. I've removed this task:");
@@ -220,5 +159,9 @@ public class Oreo {
                 throw new OreoException("Invalid input! Please write a todo, deadline or event task");
             }
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new Oreo("./data/oreo.txt").run();
     }
 }
