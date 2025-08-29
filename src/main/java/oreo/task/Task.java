@@ -1,3 +1,5 @@
+package oreo.task;
+
 public class Task {
     protected String name;
     protected boolean isCompleted;
@@ -13,6 +15,10 @@ public class Task {
     public String saveFormat() {
         int completionStatus = isCompleted ? 1 : 0;
         return completionStatus + "|" + name;
+    }
+
+    public void setIsCompleted(boolean x) {
+        isCompleted = x;
     }
 
     @Override
