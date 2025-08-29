@@ -6,7 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class Oreo {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter READ_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     // basic function to print out a single horizontal line
     public static void horizontalLine() {
         System.out.println("____________________________________________________________");
@@ -50,17 +57,20 @@ public class Oreo {
                     break;
                 case 'D':
                     name = task.substring(4,  task.lastIndexOf("|"));
-                    String by = task.substring(task.lastIndexOf("|") + 1);
-                    t = new Deadline(name, by);
+                    String byStr = task.substring(task.lastIndexOf("|") + 1);
+                    LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
+                    t = new Deadline(name, byDateTime);
                     isCompleted = (task.charAt(2) == '1');
                     t.isCompleted = isCompleted;
                     tasks.add(t);
                     break;
                 case 'E':
                     name = task.substring(4,  task.indexOf("|", 8));
-                    String from = task.substring(task.indexOf("|", 8) + 1, task.lastIndexOf("|"));
-                    String to = task.substring(task.lastIndexOf("|") + 1);
-                    t = new Event(name, from, to);
+                    String fromStr = task.substring(task.indexOf("|", 8) + 1, task.lastIndexOf("|"));
+                    String toStr = task.substring(task.lastIndexOf("|") + 1);
+                    LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
+                    LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
+                    t = new Event(name, fromDateTime, toDateTime);
                     isCompleted = (task.charAt(2) == '1');
                     t.isCompleted = isCompleted;
                     tasks.add(t);
@@ -91,7 +101,7 @@ public class Oreo {
         fw.close();
     }
 
-    public static void main(String[] args) throws OreoException {
+    public static void main(String[] args) throws Exception {
         ArrayList<Task> tasks = new ArrayList<>();
         loadTasks(tasks);
         Scanner sc = new Scanner(System.in);
@@ -149,35 +159,50 @@ public class Oreo {
             } else if (userInput.startsWith("deadline")) {
                 try {
                     String name = userInput.substring(9, userInput.indexOf("/by") -  1);
-                    String by = userInput.substring(userInput.indexOf("/by") + 4);
-                    Task t = new Deadline(name, by);
-                    tasks.add(t);
-                    saveTasks(tasks);
+                    String byStr = userInput.substring(userInput.indexOf("/by") + 4);
 
-                    horizontalLine();
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println(t);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    horizontalLine();
-                } catch (Exception e) {
-                    throw new OreoException("No name or by date provided for deadline :(");
+                    try {
+                        LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
+                        Task t = new Deadline(name, byDateTime);
+                        tasks.add(t);
+                        saveTasks(tasks);
+
+                        horizontalLine();
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println(t);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        horizontalLine();
+                    } catch (DateTimeParseException e) {
+                        throw new OreoException("Invalid date format. " +
+                                "Please follow DD/MM/YYYY. e.g. 17/11/2002");
+                    }
+                } catch (Exception ex) {
+                    throw new Exception("Failed to create deadline task", ex);
                 }
             } else if (userInput.startsWith("event")) {
                 try {
                     String name = userInput.substring(6, userInput.indexOf("/from") - 1);
-                    String from = userInput.substring(userInput.indexOf("/from") + 6, userInput.indexOf("/to") - 1);
-                    String to = userInput.substring(userInput.indexOf("/to") + 4);
-                    Task t = new Event(name, from, to);
-                    tasks.add(t);
-                    saveTasks(tasks);
+                    String fromStr = userInput.substring(userInput.indexOf("/from") + 6, userInput.indexOf("/to") - 1);
+                    String toStr = userInput.substring(userInput.indexOf("/to") + 4);
 
-                    horizontalLine();
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println(t);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    horizontalLine();
-                } catch (Exception e) {
-                    throw new OreoException("No name or from/to date provided for event :(");
+                    try {
+                        LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
+                        LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
+                        Task t = new Event(name, fromDateTime, toDateTime);
+                        tasks.add(t);
+                        saveTasks(tasks);
+
+                        horizontalLine();
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println(t);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        horizontalLine();
+                    } catch (DateTimeParseException e) {
+                        throw new OreoException("Invalid date format. " +
+                                "Please follow DD/MM/YYYY. e.g. 17/11/2002");
+                    }
+                } catch (Exception ex) {
+                    throw new Exception("Failed to create deadline task", ex);
                 }
             } else if (userInput.startsWith("delete")) {
                 int taskNum = extractNumber(userInput);
