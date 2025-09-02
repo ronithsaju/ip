@@ -9,6 +9,9 @@ import oreo.task.Todo;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Tests the getTask() and getSize() methods in the TaskList class
+ */
 public class TaskListTest {
     @Test
     public void getTask_basicTaskList_success(){

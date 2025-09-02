@@ -11,14 +11,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Parses user input commands and performs the respective actions needed
+ */
 public class Parser {
+    /** Boolean used to indicate if user wants to end the chat */
     private boolean isExit;
+    /** Formatter for date received from user */
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public Parser() {
         this.isExit = false;
     }
 
+    /**
+     * Handles all (valid and invalid) user commands and runs the respective actions needed
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @param ui User Interactions (UI) handler.
+     * @param storage Saved tasks list storage and retrieval handler.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
     public void parse(String userInput, TaskList tasks, Ui ui, Storage storage) throws OreoException {
         if (userInput.equals("bye")) {
             ui.byeMessage();
@@ -44,6 +57,7 @@ public class Parser {
             ui.taskMessage(t, tasks);
         } else if (userInput.startsWith("deadline")) {
             try {
+                // extracts task name and due date
                 String name = userInput.substring(9, userInput.indexOf("/by") -  1);
                 String byStr = userInput.substring(userInput.indexOf("/by") + 4);
 
@@ -61,11 +75,12 @@ public class Parser {
                 // rethrow DateTimeParseException
                 throw ex;
             } catch (Exception ex) {
-                //unexpected errors
+                // unexpected errors
                 throw new OreoException("Failed to create deadline task", ex);
             }
         } else if (userInput.startsWith("event")) {
             try {
+                // extracts task name, start date and end date
                 String name = userInput.substring(6, userInput.indexOf("/from") - 1);
                 String fromStr = userInput.substring(userInput.indexOf("/from") + 6, userInput.indexOf("/to") - 1);
                 String toStr = userInput.substring(userInput.indexOf("/to") + 4);
@@ -95,13 +110,18 @@ public class Parser {
             storage.saveTasks(tasks);
             ui.deleteMessage(t, tasks);
         } else {
+            // user input is none of the valid commands above
             ui.horizontalLine();
             throw new OreoException("Invalid input! Please write a todo, deadline or event task");
         }
     }
 
-    // basic function to remove all non-numbers from input
-    // with exception thrown if there is no number in input
+    /**
+     * Extracts and returns number from any input String.
+     * @param input User input command.
+     * @return Integer extracted from user input.
+     * @throws OreoException Custom exception made for the chatbot thrown if there is no number inside input.
+     */
     public static int extractNumber(String input) throws OreoException {
         try {
             return Integer.parseInt(input.replaceAll("[^0-9]", ""));

@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Tests the extractNumber() method in the Parser class
+ */
 public class ParserTest {
     @Test
     public void extractNumber_basicCommand_success() throws OreoException {

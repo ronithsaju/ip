@@ -3,6 +3,9 @@ package oreo.task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Tests the toString() and saveFormat() methods in the Todo class
+ */
 public class TodoTest {
     @Test
     public void toString_basicTodo_success(){
