@@ -4,6 +4,10 @@ import oreo.task.Task;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a list of tasks and provides methods to create, read, update and delete tasks inside it.
+ * Uses Java ArrayList class.
+ */
 public class TaskList {
     private final ArrayList<Task> tasks;
 

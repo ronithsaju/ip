@@ -1,5 +1,8 @@
 package oreo.task;
 
+/**
+ * Represents a Todo task with a name and a completion status.
+ */
 public class Todo extends Task {
 
     public Todo(String name) {
