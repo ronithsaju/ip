@@ -110,6 +110,10 @@ public class Parser {
             tasks.removeTask(t);
             storage.saveTasks(tasks);
             ui.deleteMessage(t, tasks);
+        } else if (userInput.startsWith("find")) {
+            String keyword = userInput.substring(5);
+            TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
+            ui.findMessage(matchingTasks);
         } else {
             // user input is none of the valid commands above
             ui.horizontalLine();

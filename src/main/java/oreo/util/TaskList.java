@@ -42,4 +42,20 @@ public class TaskList {
     public ArrayList<Task> getTasks() {
         return tasks;
     }
+
+    /**
+     * Returns a list of tasks with names that matches the provided keyword.
+     * @param keyword Name of task the user is trying to find.
+     * @return A list of tasks with matching names.
+     */
+    public TaskList findTaskByKeywordSearch(String keyword) {
+        ArrayList<Task> tasksFound = new ArrayList<>();
+        for (Task t : tasks) {
+            String taskName = t.getName();
+            if (taskName.contains(keyword)) {
+                tasksFound.add(t);
+            }
+        }
+        return new TaskList(tasksFound);
+    }
 }
