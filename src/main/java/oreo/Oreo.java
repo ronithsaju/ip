@@ -36,7 +36,7 @@ public class Oreo {
      */
     public void run() throws OreoException {
         ui.welcomeMessage();
-        while (!parser.getIsExit()) {
+        while (!parser.getExit()) {
             String userInput = ui.readCommand();
             parser.parse(userInput, tasks, ui, storage);
         }
