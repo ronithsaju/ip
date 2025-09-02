@@ -94,6 +94,10 @@ public class Parser {
             tasks.removeTask(t);
             storage.saveTasks(tasks);
             ui.deleteMessage(t, tasks);
+        } else if (userInput.startsWith("find")) {
+            String keyword = userInput.substring(5);
+            TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
+            ui.findMessage(matchingTasks);
         } else {
             ui.horizontalLine();
             throw new OreoException("Invalid input! Please write a todo, deadline or event task");

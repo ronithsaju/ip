@@ -73,4 +73,13 @@ public class Ui {
         System.out.println("Now you have " + tl.getSize() + " tasks in the list.");
         horizontalLine();
     }
+
+    public void findMessage(TaskList tl) {
+        horizontalLine();
+        System.out.println("Here are the matching tasks in your list:");
+        for (Task task : tl.getTasks()) {
+            System.out.println((tl.getTaskIndex(task) + 1) + "." + task);
+        }
+        horizontalLine();
+    }
 }

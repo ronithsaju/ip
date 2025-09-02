@@ -21,6 +21,10 @@ public class Task {
         isCompleted = x;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "[" + getCompletionStatusIcon() + "] " + name;
