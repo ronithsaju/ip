@@ -63,7 +63,8 @@ public class Storage {
                     break;
                 case 'E':
                     name = task.substring(4,  task.indexOf("|", 8));
-                    String fromStr = task.substring(task.indexOf("|", 8) + 1, task.lastIndexOf("|"));
+                    String fromStr = task.substring(task.indexOf("|", 8) + 1,
+                            task.lastIndexOf("|"));
                     String toStr = task.substring(task.lastIndexOf("|") + 1);
                     LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
                     LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);

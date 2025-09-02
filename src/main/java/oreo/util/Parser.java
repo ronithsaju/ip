@@ -67,7 +67,8 @@ public class Parser {
         } else if (userInput.startsWith("event")) {
             try {
                 String name = userInput.substring(6, userInput.indexOf("/from") - 1);
-                String fromStr = userInput.substring(userInput.indexOf("/from") + 6, userInput.indexOf("/to") - 1);
+                String fromStr = userInput.substring(userInput.indexOf("/from") + 6,
+                        userInput.indexOf("/to") - 1);
                 String toStr = userInput.substring(userInput.indexOf("/to") + 4);
 
                 try {
@@ -79,7 +80,7 @@ public class Parser {
                     ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
                     throw new OreoException("Invalid date format. " +
-                            "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
+                            "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
                 }
             } catch (OreoException ex) {
                 // rethrow DateTimeParseException
@@ -110,7 +111,7 @@ public class Parser {
         }
     }
 
-    public boolean getIsExit() {
+    public boolean getExit() {
         return isExit;
     }
 }
