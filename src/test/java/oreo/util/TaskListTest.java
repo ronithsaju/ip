@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import oreo.task.Deadline;
 import oreo.task.Task;
 import oreo.task.Todo;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,20 +15,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class TaskListTest {
     @Test
-    public void getTask_basicTaskList_success(){
+    public void getTask_basicTaskList_success() {
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Todo("read book"));
-        Task t = new Deadline("complete tutorial", LocalDate.of(2025 ,9, 5));
+        Task t = new Deadline("complete tutorial", LocalDate.of(2025, 9, 5));
         tasks.add(t);
         TaskList tl = new TaskList(tasks);
         assertEquals(t, tl.getTask(1));
     }
 
     @Test
-    public void getSize_taskListAfterTaskRemoved_success(){
+    public void getSize_taskListAfterTaskRemoved_success() {
         ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(new Todo("read book"));
-        Task t = new Deadline("complete tutorial", LocalDate.of(2025 ,9, 5));
+        Task t = new Deadline("complete tutorial", LocalDate.of(2025, 9, 5));
         tasks.add(t);
         TaskList tl = new TaskList(tasks);
         tl.removeTask(t);
