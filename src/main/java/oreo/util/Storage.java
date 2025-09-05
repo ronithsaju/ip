@@ -28,10 +28,15 @@ public class Storage {
      * Initializes the path to the file to load and save tasks.
      * @param filePath Path to the file to load and save tasks.
      */
-    public Storage (String filePath) {
+    public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Runs readTasksFromFile() and catches possible exceptions thrown.
+     * @return Array List of all previously saved tasks.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
     public ArrayList<Task> loadTasks() throws OreoException {
         try {
             return readTasksFromFile();
@@ -48,50 +53,57 @@ public class Storage {
      */
     private ArrayList<Task> readTasksFromFile() throws FileNotFoundException, OreoException {
         File f = new File(this.filePath);
-        if (!f.exists()) return null; // skips everything if there is no saved tasks file
+        if (!f.exists()) {
+            return null; // skips everything if there is no saved tasks file
+        }
         ArrayList<Task> tasks = new ArrayList<>();
         Scanner s = new Scanner(f);
-        while (s.hasNext())  {
+        while (s.hasNext()) {
             String task = s.nextLine();
             boolean isCompleted;
             String name;
             Task t;
             switch (task.charAt(0)) {
-                case 'T': // todo task
-                    name = task.substring(4);
-                    t = new Todo(name);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.setIsCompleted(isCompleted);
-                    tasks.add(t);
-                    break;
-                case 'D': // deadline task
-                    name = task.substring(4,  task.lastIndexOf("|"));
-                    String byStr = task.substring(task.lastIndexOf("|") + 1);
-                    LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
-                    t = new Deadline(name, byDateTime);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.setIsCompleted(isCompleted);
-                    tasks.add(t);
-                    break;
-                case 'E': // event task
-                    name = task.substring(4,  task.indexOf("|", 8));
-                    String fromStr = task.substring(task.indexOf("|", 8) + 1,
-                            task.lastIndexOf("|"));
-                    String toStr = task.substring(task.lastIndexOf("|") + 1);
-                    LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
-                    LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
-                    t = new Event(name, fromDateTime, toDateTime);
-                    isCompleted = (task.charAt(2) == '1');
-                    t.setIsCompleted(isCompleted);
-                    tasks.add(t);
-                    break;
-                default: // invalid
-                    throw new OreoException("The saved file of tasks has an invalid format :o");
+            case 'T': // todo task
+                name = task.substring(4);
+                t = new Todo(name);
+                isCompleted = (task.charAt(2) == '1');
+                t.setIsCompleted(isCompleted);
+                tasks.add(t);
+                break;
+            case 'D': // deadline task
+                name = task.substring(4, task.lastIndexOf("|"));
+                String byStr = task.substring(task.lastIndexOf("|") + 1);
+                LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
+                t = new Deadline(name, byDateTime);
+                isCompleted = (task.charAt(2) == '1');
+                t.setIsCompleted(isCompleted);
+                tasks.add(t);
+                break;
+            case 'E': // event task
+                name = task.substring(4, task.indexOf("|", 8));
+                String fromStr = task.substring(task.indexOf("|", 8) + 1,
+                        task.lastIndexOf("|"));
+                String toStr = task.substring(task.lastIndexOf("|") + 1);
+                LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
+                LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
+                t = new Event(name, fromDateTime, toDateTime);
+                isCompleted = (task.charAt(2) == '1');
+                t.setIsCompleted(isCompleted);
+                tasks.add(t);
+                break;
+            default: // invalid
+                throw new OreoException("The saved file of tasks has an invalid format :o");
             }
         }
         return tasks;
     }
 
+    /**
+     * Runs writeTasksToFile(TaskList tl) and catches possible exceptions thrown.
+     * @param tl List of tasks to be saved.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
     public void saveTasks(TaskList tl) throws OreoException {
         try {
             writeTasksToFile(tl);

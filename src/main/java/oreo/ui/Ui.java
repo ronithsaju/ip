@@ -113,6 +113,10 @@ public class Ui {
         horizontalLine();
     }
 
+    /**
+     * Prints out the tasks in the provided task list.
+     * @param tl List of tasks that matches the user provided keyword.
+     */
     public void findMessage(TaskList tl) {
         horizontalLine();
         System.out.println("Here are the matching tasks in your list:");

@@ -15,6 +15,12 @@ public class Event extends Task {
     /** Formatter for date to display */
     private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
+    /**
+     * Initializes an Event object with a name, start date and end date.
+     * @param name Name of the event.
+     * @param from Start date of the event.
+     * @param to End date of the event.
+     */
     public Event(String name, LocalDate from, LocalDate to) {
         super(name);
         this.from = from;

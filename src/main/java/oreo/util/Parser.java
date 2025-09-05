@@ -1,11 +1,11 @@
 package oreo.util;
 
 import oreo.OreoException;
-import oreo.ui.Ui;
 import oreo.task.Deadline;
 import oreo.task.Event;
 import oreo.task.Task;
 import oreo.task.Todo;
+import oreo.ui.Ui;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -58,7 +58,7 @@ public class Parser {
         } else if (userInput.startsWith("deadline")) {
             try {
                 // extracts task name and due date
-                String name = userInput.substring(9, userInput.indexOf("/by") -  1);
+                String name = userInput.substring(9, userInput.indexOf("/by") - 1);
                 String byStr = userInput.substring(userInput.indexOf("/by") + 4);
 
                 try {
@@ -68,8 +68,8 @@ public class Parser {
                     storage.saveTasks(tasks);
                     ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
-                    throw new OreoException("Invalid date format. " +
-                            "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
+                    throw new OreoException("Invalid date format. "
+                            + "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
                 }
             } catch (OreoException ex) {
                 // rethrow DateTimeParseException
@@ -94,8 +94,8 @@ public class Parser {
                     storage.saveTasks(tasks);
                     ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
-                    throw new OreoException("Invalid date format. " +
-                            "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
+                    throw new OreoException("Invalid date format. "
+                            + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
                 }
             } catch (OreoException ex) {
                 // rethrow DateTimeParseException
