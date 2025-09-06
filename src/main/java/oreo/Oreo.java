@@ -49,4 +49,11 @@ public class Oreo {
     public static void main(String[] args) throws OreoException {
         new Oreo("./data/oreo.txt").run();
     }
+
+    /**
+     * Generates a response for the user's chat message.
+     */
+    public String getResponse(String input) {
+        return "Oreo heard: " + input;
+    }
 }
