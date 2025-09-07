@@ -21,8 +21,8 @@ public class Oreo {
      */
     public Oreo(String filePath) throws OreoException {
         ui = new Ui();
-        parser = new Parser();
         storage = new Storage(filePath);
+        parser = new Parser(ui, storage);
         if (storage.loadTasks() != null) { // if a saved tasks file exists
             tasks = new TaskList(storage.loadTasks());
         } else {
@@ -31,22 +31,9 @@ public class Oreo {
     }
 
     /**
-     * Welcomes user and runs the chatbot operations.
-     * @throws OreoException Custom exception made for the chatbot.
+     * Generates a response for the user's chat message.
      */
-    public void run() throws OreoException {
-        ui.welcomeMessage();
-        while (!parser.getExit()) {
-            String userInput = ui.readCommand();
-            parser.parse(userInput, tasks, ui, storage);
-        }
-    }
-
-    /**
-     * Runs the main execution loop of the chatbot.
-     * @throws OreoException Custom exception made for the chatbot.
-     */
-    public static void main(String[] args) throws OreoException {
-        new Oreo("./data/oreo.txt").run();
+    public String getResponse(String input) throws OreoException {
+        return parser.parse(input, tasks);
     }
 }
