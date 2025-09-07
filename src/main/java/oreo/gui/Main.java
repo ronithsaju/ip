@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import oreo.Oreo;
@@ -29,6 +30,11 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setOreo(oreo); // inject the Oreo instance
+
+            stage.setTitle("Oreo");
+            Image oreoIcon = new Image("/images/oreo.png");
+            stage.getIcons().add(oreoIcon);
+
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
