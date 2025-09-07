@@ -1,6 +1,7 @@
 package oreo.util;
 
 import oreo.OreoException;
+import oreo.gui.Main;
 import oreo.task.Deadline;
 import oreo.task.Event;
 import oreo.task.Task;
@@ -15,46 +16,51 @@ import java.time.format.DateTimeParseException;
  * Parses user input commands and performs the respective actions needed
  */
 public class Parser {
-    /** Boolean used to indicate if user wants to end the chat */
-    private boolean isExit;
     /** Formatter for date received from user */
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-    public Parser() {
-        this.isExit = false;
+    private final Ui ui;
+    private final Storage storage;
+
+    /**
+     * Initializes a parser with UI and storage.
+     * @param ui User Interactions (UI) handler.
+     * @param storage Saved tasks list storage and retrieval handler.
+     */
+    public Parser(Ui ui, Storage storage) {
+        this.ui = ui;
+        this.storage = storage;
     }
 
     /**
      * Handles all (valid and invalid) user commands and runs the respective actions needed
      * @param userInput User input command.
      * @param tasks List of tasks.
-     * @param ui User Interactions (UI) handler.
-     * @param storage Saved tasks list storage and retrieval handler.
      * @throws OreoException Custom exception made for the chatbot.
      */
-    public void parse(String userInput, TaskList tasks, Ui ui, Storage storage) throws OreoException {
+    public String parse(String userInput, TaskList tasks) throws OreoException {
         if (userInput.equals("bye")) {
-            ui.byeMessage();
-            isExit = true;
+            Main.end();
+            return ui.byeMessage();
         } else if (userInput.equals("list")) {
-            ui.listMessage(tasks);
+            return ui.listMessage(tasks);
         } else if (userInput.startsWith("mark")) {
             int taskNum = extractNumber(userInput);
             Task t = tasks.getTask(taskNum - 1);
             t.setIsCompleted(true);
             storage.saveTasks(tasks);
-            ui.markMessage(t);
+            return ui.markMessage(t);
         } else if (userInput.startsWith("unmark")) {
             int taskNum = extractNumber(userInput);
             Task t = tasks.getTask(taskNum - 1);
             t.setIsCompleted(false);
             storage.saveTasks(tasks);
-            ui.unmarkMessage(t);
+            return ui.unmarkMessage(t);
         } else if (userInput.startsWith("todo")) {
             Task t = new Todo(userInput.substring(5));
             tasks.addTask(t);
             storage.saveTasks(tasks);
-            ui.taskMessage(t, tasks);
+            return ui.taskMessage(t, tasks);
         } else if (userInput.startsWith("deadline")) {
             try {
                 // extracts task name and due date
@@ -66,7 +72,7 @@ public class Parser {
                     Task t = new Deadline(name, byDateTime);
                     tasks.addTask(t);
                     storage.saveTasks(tasks);
-                    ui.taskMessage(t, tasks);
+                    return ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
                     throw new OreoException("Invalid date format. "
                             + "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
@@ -92,7 +98,7 @@ public class Parser {
                     Task t = new Event(name, fromDateTime, toDateTime);
                     tasks.addTask(t);
                     storage.saveTasks(tasks);
-                    ui.taskMessage(t, tasks);
+                    return ui.taskMessage(t, tasks);
                 } catch (DateTimeParseException e) {
                     throw new OreoException("Invalid date format. "
                             + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
@@ -109,15 +115,14 @@ public class Parser {
             Task t = tasks.getTask(taskNum - 1);
             tasks.removeTask(t);
             storage.saveTasks(tasks);
-            ui.deleteMessage(t, tasks);
+            return ui.deleteMessage(t, tasks);
         } else if (userInput.startsWith("find")) {
             String keyword = userInput.substring(5);
             TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
-            ui.findMessage(matchingTasks);
+            return ui.findMessage(matchingTasks);
         } else {
             // user input is none of the valid commands above
-            ui.horizontalLine();
-            throw new OreoException("Invalid input! Please write a todo, deadline or event task");
+            return ui.invalidInputMessage();
         }
     }
 
@@ -133,9 +138,5 @@ public class Parser {
         } catch (NumberFormatException e) {
             throw new OreoException("Please provide a valid task number.");
         }
-    }
-
-    public boolean getExit() {
-        return isExit;
     }
 }

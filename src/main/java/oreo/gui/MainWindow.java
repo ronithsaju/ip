@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import oreo.Oreo;
+import oreo.OreoException;
 
 /**
  * Controller for the main GUI.
@@ -30,6 +31,7 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        welcomeMessage();
     }
 
     /** Injects the Oreo instance */
@@ -42,7 +44,7 @@ public class MainWindow extends AnchorPane {
      * the dialog container. Clears the user input after processing.
      */
     @FXML
-    private void handleUserInput() {
+    private void handleUserInput() throws OreoException {
         String input = userInput.getText();
         String response = oreo.getResponse(input);
         dialogContainer.getChildren().addAll(
@@ -50,5 +52,12 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getOreoDialog(response, oreoImage)
         );
         userInput.clear();
+    }
+
+    private void welcomeMessage() {
+        String welcome = "Hello! I'm Oreo\n" + "What can I do for you?";
+        dialogContainer.getChildren().addAll(
+                DialogBox.getOreoDialog(welcome, oreoImage)
+        );
     }
 }
