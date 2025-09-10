@@ -1,5 +1,9 @@
 package oreo.util;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import oreo.OreoException;
 import oreo.gui.Main;
 import oreo.task.Deadline;
@@ -8,19 +12,14 @@ import oreo.task.Task;
 import oreo.task.Todo;
 import oreo.ui.Ui;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 /**
  * Parses user input commands and performs the respective actions needed
  */
 public class Parser {
-    private final Ui ui;
-    private final Storage storage;
-
     /** Formatter for date received from user */
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private final Ui ui;
+    private final Storage storage;
 
     /**
      * Initializes a parser with UI and storage.

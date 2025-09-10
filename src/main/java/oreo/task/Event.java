@@ -8,12 +8,12 @@ import java.time.format.DateTimeFormatter;
  */
 public class Event extends Task {
 
+    /** Formatter for date to display */
+    private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
     /** Start date of the event */
     protected LocalDate from;
     /** End date of the event */
     protected LocalDate to;
-    /** Formatter for date to display */
-    private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
     /**
      * Initializes an Event object with a name, start date and end date.

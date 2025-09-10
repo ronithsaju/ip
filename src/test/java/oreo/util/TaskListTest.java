@@ -1,14 +1,15 @@
 package oreo.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
+
+import org.junit.jupiter.api.Test;
 
 import oreo.task.Deadline;
 import oreo.task.Task;
 import oreo.task.Todo;
-
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests the getTask() and getSize() methods in the TaskList class

@@ -1,8 +1,8 @@
 package oreo.util;
 
-import oreo.task.Task;
-
 import java.util.ArrayList;
+
+import oreo.task.Task;
 
 /**
  * Represents a list of tasks and provides methods to create, read, update and delete tasks inside it.

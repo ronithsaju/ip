@@ -8,10 +8,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class Deadline extends Task {
 
-    /** Due date of the deadline task */
-    protected LocalDate by;
     /** Formatter for date to display */
     private static final DateTimeFormatter DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    /** Due date of the deadline task */
+    protected LocalDate by;
 
     /**
      * Initializes a Deadline object with a name and due date.

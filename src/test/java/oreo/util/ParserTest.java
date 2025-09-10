@@ -1,9 +1,11 @@
 package oreo.util;
 
-import oreo.OreoException;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+import oreo.OreoException;
 
 /**
  * Tests the extractNumber() method in the Parser class
