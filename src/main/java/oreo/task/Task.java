@@ -31,7 +31,7 @@ public class Task {
      * @return String representation for file storage.
      */
     public String saveFormat() {
-        int completionStatus = isCompleted ? 1 : 0;
+        int completionStatus = (isCompleted ? 1 : 0);
         return completionStatus + "|" + name;
     }
 
