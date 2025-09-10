@@ -16,12 +16,11 @@ public class Oreo {
 
     /**
      * Initializes the UI, Parser, Storage and TaskList components of the chatbot.
-     * @param filePath Path to previously saved tasks list.
      * @throws OreoException Custom exception made for the chatbot.
      */
-    public Oreo(String filePath) throws OreoException {
+    public Oreo() throws OreoException {
         ui = new Ui();
-        storage = new Storage(filePath);
+        storage = new Storage();
         parser = new Parser(ui, storage);
         if (storage.loadTasks() != null) { // if a saved tasks file exists
             tasks = new TaskList(storage.loadTasks());

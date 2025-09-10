@@ -17,7 +17,7 @@ import oreo.OreoException;
  */
 public class Main extends Application {
 
-    private Oreo oreo = new Oreo("./data/oreo.txt");
+    private final Oreo oreo = new Oreo();
 
     public Main() throws OreoException {
     }

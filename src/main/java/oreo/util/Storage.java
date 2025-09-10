@@ -11,6 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -21,15 +24,35 @@ import java.util.Scanner;
  * Handles the loading and saving of tasks for the chatbot.
  */
 public class Storage {
-    private final String filePath;
+    private static final String DIR = "data";
+    private static final String FILE_PATH = "data/oreo.txt";
     private static final DateTimeFormatter READ_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Initializes the path to the file to load and save tasks.
-     * @param filePath Path to the file to load and save tasks.
+     * Ensures directory and text file to store tasks exists.
      */
-    public Storage(String filePath) {
-        this.filePath = filePath;
+    public Storage() throws OreoException {
+        ensureFileExists();
+    }
+
+    /**
+     * Creates directory and text file to save tasks to, if it does not already exist.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private void ensureFileExists() throws OreoException {
+        try {
+            Path dirPath = Paths.get(DIR);
+            if (Files.notExists(dirPath)) {
+                Files.createDirectories(dirPath);
+            }
+
+            Path filePath = Paths.get(FILE_PATH);
+            if (Files.notExists(filePath)) {
+                Files.createFile(filePath);
+            }
+        } catch (IOException e) {
+            throw new OreoException("Issue finding file.", e);
+        }
     }
 
     /**
@@ -52,7 +75,7 @@ public class Storage {
      * @throws OreoException Custom exception made for the chatbot.
      */
     private ArrayList<Task> readTasksFromFile() throws FileNotFoundException, OreoException {
-        File f = new File(this.filePath);
+        File f = new File(FILE_PATH);
         if (!f.exists()) {
             return null; // skips everything if there is no saved tasks file
         }
@@ -118,7 +141,7 @@ public class Storage {
      * @throws IOException If file does not exist or cannot be written into.
      */
     private void writeTasksToFile(TaskList tl) throws IOException {
-        FileWriter fw = new FileWriter(this.filePath);
+        FileWriter fw = new FileWriter(FILE_PATH);
         StringBuilder textToAdd = new StringBuilder();
         for (Task t : tl.getTasks()) {
             textToAdd.append(t.saveFormat());
