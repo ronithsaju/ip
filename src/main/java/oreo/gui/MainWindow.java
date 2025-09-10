@@ -28,6 +28,9 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/user.png"));
     private Image oreoImage = new Image(this.getClass().getResourceAsStream("/images/oreo.png"));
 
+    /**
+     * Binds ScrollPane to VBox and prints welcome message.
+     */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());

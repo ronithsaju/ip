@@ -19,12 +19,7 @@ public class Ui {
      * @param tl List of all the tasks so far.
      */
     public String listMessage(TaskList tl) {
-        StringBuilder res = new StringBuilder();
-        for (Task task : tl.getTasks()) {
-            res.append((tl.getTaskIndex(task) + 1) + "." + task + "\n");
-        }
-        return "Here are the tasks in your list:\n"
-                + res;
+        return "Here are the tasks in your list:\n" + listTasks(tl);
     }
 
     /**
@@ -32,8 +27,7 @@ public class Ui {
      * @param t Task to be marked as completed.
      */
     public String markMessage(Task t) {
-        return "Nice! I've marked this task as done:\n"
-                + t;
+        return "Nice! I've marked this task as done:\n" + t;
     }
 
     /**
@@ -41,8 +35,7 @@ public class Ui {
      * @param t Task to be marked as uncompleted.
      */
     public String unmarkMessage(Task t) {
-        return "OK, I've marked this task as not done yet:\n"
-                + t;
+        return "OK, I've marked this task as not done yet:\n" + t;
     }
 
     /**
@@ -51,8 +44,8 @@ public class Ui {
      * @param tl List of all the tasks so far.
      */
     public String taskMessage(Task t, TaskList tl) {
-        return "Got it. I've added this task:\n"
-                + t + "\nNow you have " + tl.getSize() + " tasks in the list.";
+        return "Got it. I've added this task:\n" + t
+                + "\nNow you have " + tl.getSize() + " tasks in the list.";
     }
 
     /**
@@ -61,8 +54,8 @@ public class Ui {
      * @param tl List of all the tasks so far.
      */
     public String deleteMessage(Task t, TaskList tl) {
-        return "Noted. I've removed this task:\n"
-                + t + "\nNow you have " + tl.getSize() + " tasks in the list.";
+        return "Noted. I've removed this task:\n" + t
+                + "\nNow you have " + tl.getSize() + " tasks in the list.";
     }
 
     /**
@@ -70,12 +63,7 @@ public class Ui {
      * @param matchesTl List of tasks that matches the user provided keyword.
      */
     public String findMessage(TaskList matchesTl) {
-        StringBuilder res = new StringBuilder();
-        for (Task task : matchesTl.getTasks()) {
-            res.append((matchesTl.getTaskIndex(task) + 1) + "." + task + "\n");
-        }
-        return "Here are the matching tasks in your list:\n"
-                + res;
+        return "Here are the matching tasks in your list:\n" + listTasks(matchesTl);
     }
 
     /**
@@ -84,5 +72,17 @@ public class Ui {
     public String invalidInputMessage() {
         return "Invalid input!\n" + "Please use any of the following commands: "
                 + "list, mark, unmark, todo, deadline, event, delete, find or bye";
+    }
+
+    /**
+     * Returns tasks numbered and listed out.
+     * @param tl List of tasks.
+     */
+    public String listTasks(TaskList tl) {
+        StringBuilder res = new StringBuilder();
+        for (Task task : tl.getTasks()) {
+            res.append((tl.getTaskIndex(task) + 1) + "." + task + "\n");
+        }
+        return res.toString();
     }
 }

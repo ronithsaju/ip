@@ -16,11 +16,11 @@ import java.time.format.DateTimeParseException;
  * Parses user input commands and performs the respective actions needed
  */
 public class Parser {
-    /** Formatter for date received from user */
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
     private final Ui ui;
     private final Storage storage;
+
+    /** Formatter for date received from user */
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     /**
      * Initializes a parser with UI and storage.
