@@ -47,6 +47,8 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() throws OreoException {
         String input = userInput.getText();
         String response = oreo.getResponse(input);
+        assert userImage != null : "User image not found";
+        assert oreoImage != null : "Oreo image not found";
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getOreoDialog(response, oreoImage)
