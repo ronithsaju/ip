@@ -12,6 +12,7 @@ public class Task {
      * @param name Name of the task.
      */
     public Task(String name) {
+        assert name != null : "No name provided for task";
         this.name = name;
     }
 

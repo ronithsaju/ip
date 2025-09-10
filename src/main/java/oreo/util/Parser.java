@@ -28,6 +28,8 @@ public class Parser {
      * @param storage Saved tasks list storage and retrieval handler.
      */
     public Parser(Ui ui, Storage storage) {
+        assert ui != null : "Parser unable to find Ui";
+        assert storage != null : "Parser unable to find Storage";
         this.ui = ui;
         this.storage = storage;
     }
