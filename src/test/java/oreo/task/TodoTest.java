@@ -17,6 +17,6 @@ public class TodoTest {
     public void saveFormat_completedTodo_success() {
         Task sleep = new Todo("sleep");
         sleep.setIsCompleted(true);
-        assertEquals("T|1|sleep", sleep.saveFormat());
+        assertEquals("T|1|sleep|", sleep.saveFormat());
     }
 }

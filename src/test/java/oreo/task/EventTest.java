@@ -24,6 +24,6 @@ public class EventTest {
         LocalDate to = LocalDate.of(2025, 9, 5);
         Event e = new Event("Week 4", from, to);
         e.setIsCompleted(true);
-        assertEquals("E|1|Week 4|2025-09-01|2025-09-05", e.saveFormat());
+        assertEquals("E|1|Week 4|2025-09-01|2025-09-05|", e.saveFormat());
     }
 }
