@@ -25,7 +25,7 @@ public class Deadline extends Task {
 
     @Override
     public String saveFormat() {
-        return "D" + "|" + super.saveFormat() + "|" + by;
+        return "D" + "|" + super.saveFormat() + "|" + by + "|" + (note != null ? note.getInfo() : "");
     }
 
     @Override

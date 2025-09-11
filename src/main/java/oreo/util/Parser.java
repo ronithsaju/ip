@@ -121,6 +121,17 @@ public class Parser {
             String keyword = userInput.substring(5);
             TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
             return ui.findMessage(matchingTasks);
+        } else if (userInput.startsWith("set note")) {
+            String info = userInput.substring(11);
+            int taskNum = extractNumber(userInput);
+            Task t = tasks.getTask(taskNum - 1);
+            t.setNote(info);
+            storage.saveTasks(tasks);
+            return ui.setNoteMessage(t);
+        } else if (userInput.startsWith("get note")) {
+            int taskNum = extractNumber(userInput);
+            Task t = tasks.getTask(taskNum - 1);
+            return ui.getNoteMessage(t);
         } else {
             // user input is none of the valid commands above
             return ui.invalidInputMessage();

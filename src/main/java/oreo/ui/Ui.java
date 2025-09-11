@@ -75,6 +75,25 @@ public class Ui {
     }
 
     /**
+     * Returns message that the note has been added to the task.
+     * @param t Task assigned to the note.
+     */
+    public String setNoteMessage(Task t) {
+        return "Noted. I've added your note to this task:\n" + t;
+    }
+
+    /**
+     * Returns the info in the note of the task.
+     * @param t Task to get the info of the note from.
+     */
+    public String getNoteMessage(Task t) {
+        if (t.getNote() == null) { // guard clause
+            return "There is no note for this task";
+        }
+        return "Here is the note for the task:\n" + t.getNote().getInfo();
+    }
+
+    /**
      * Returns tasks numbered and listed out.
      * @param tl List of tasks.
      */

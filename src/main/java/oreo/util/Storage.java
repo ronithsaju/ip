@@ -86,31 +86,44 @@ public class Storage {
             Task t;
             switch (task.charAt(0)) {
             case 'T': // todo task
-                name = task.substring(4);
+                name = task.substring(4, task.lastIndexOf("|"));
                 t = new Todo(name);
                 isCompleted = (task.charAt(2) == '1');
                 t.setIsCompleted(isCompleted);
+                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
+                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
+                    t.setNote(noteInfo);
+                }
                 tasks.add(t);
                 break;
             case 'D': // deadline task
-                name = task.substring(4, task.lastIndexOf("|"));
-                String byStr = task.substring(task.lastIndexOf("|") + 1);
+                name = task.substring(4, task.indexOf("|", 4));
+                String byStr = task.substring(task.indexOf("|", 4) + 1, task.lastIndexOf("|"));
                 LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
                 t = new Deadline(name, byDateTime);
                 isCompleted = (task.charAt(2) == '1');
                 t.setIsCompleted(isCompleted);
+                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
+                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
+                    t.setNote(noteInfo);
+                }
                 tasks.add(t);
                 break;
             case 'E': // event task
-                name = task.substring(4, task.indexOf("|", 8));
-                String fromStr = task.substring(task.indexOf("|", 8) + 1,
+                name = task.substring(4, task.indexOf("|", 4));
+                String fromStr = task.substring(4 + name.length() + 1,
+                        task.indexOf("|", name.length() + 5));
+                String toStr = task.substring(task.indexOf("|", name.length() + 5) + 1,
                         task.lastIndexOf("|"));
-                String toStr = task.substring(task.lastIndexOf("|") + 1);
                 LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
                 LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
                 t = new Event(name, fromDateTime, toDateTime);
                 isCompleted = (task.charAt(2) == '1');
                 t.setIsCompleted(isCompleted);
+                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
+                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
+                    t.setNote(noteInfo);
+                }
                 tasks.add(t);
                 break;
             default: // invalid

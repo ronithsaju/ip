@@ -6,6 +6,7 @@ package oreo.task;
 public class Task {
     protected String name;
     protected boolean isCompleted;
+    protected Note note = null;
 
     /**
      * Creates a new Task.
@@ -41,6 +42,21 @@ public class Task {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Creates a note for the task and initializes it with some text.
+     * @param info The text to be in the note.
+     */
+    public void setNote(String info) {
+        this.note = new Note(info);
+    }
+
+    /**
+     * Returns the note for the task.
+     */
+    public Note getNote() {
+        return note;
     }
 
     @Override
