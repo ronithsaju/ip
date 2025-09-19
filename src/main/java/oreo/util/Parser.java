@@ -40,102 +40,240 @@ public class Parser {
      * @throws OreoException Custom exception made for the chatbot.
      */
     public String parse(String userInput, TaskList tasks) throws OreoException {
-        if (userInput.equals("bye")) {
+        switch (getCommand(userInput)) {
+        case "bye":
             Main.end();
             return ui.byeMessage();
-        } else if (userInput.equals("list")) {
+        case "list":
             return ui.listMessage(tasks);
-        } else if (userInput.startsWith("mark")) {
-            int taskNum = extractNumber(userInput);
-            Task t = tasks.getTask(taskNum - 1);
-            t.setIsCompleted(true);
-            storage.saveTasks(tasks);
-            return ui.markMessage(t);
-        } else if (userInput.startsWith("unmark")) {
-            int taskNum = extractNumber(userInput);
-            Task t = tasks.getTask(taskNum - 1);
-            t.setIsCompleted(false);
-            storage.saveTasks(tasks);
-            return ui.unmarkMessage(t);
-        } else if (userInput.startsWith("todo")) {
-            Task t = new Todo(userInput.substring(5));
-            tasks.addTask(t);
-            storage.saveTasks(tasks);
-            return ui.taskMessage(t, tasks);
-        } else if (userInput.startsWith("deadline")) {
-            try {
-                // extracts task name and due date
-                String name = userInput.substring(9, userInput.indexOf("/by") - 1);
-                String byStr = userInput.substring(userInput.indexOf("/by") + 4);
-
-                try {
-                    LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
-                    Task t = new Deadline(name, byDateTime);
-                    tasks.addTask(t);
-                    storage.saveTasks(tasks);
-                    return ui.taskMessage(t, tasks);
-                } catch (DateTimeParseException e) {
-                    throw new OreoException("Invalid date format. "
-                            + "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
-                }
-            } catch (OreoException ex) {
-                // rethrow DateTimeParseException
-                throw ex;
-            } catch (Exception ex) {
-                // unexpected errors
-                throw new OreoException("Failed to create deadline task", ex);
-            }
-        } else if (userInput.startsWith("event")) {
-            try {
-                // extracts task name, start date and end date
-                String name = userInput.substring(6, userInput.indexOf("/from") - 1);
-                String fromStr = userInput.substring(userInput.indexOf("/from") + 6,
-                        userInput.indexOf("/to") - 1);
-                String toStr = userInput.substring(userInput.indexOf("/to") + 4);
-
-                try {
-                    LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
-                    LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
-                    Task t = new Event(name, fromDateTime, toDateTime);
-                    tasks.addTask(t);
-                    storage.saveTasks(tasks);
-                    return ui.taskMessage(t, tasks);
-                } catch (DateTimeParseException e) {
-                    throw new OreoException("Invalid date format. "
-                            + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
-                }
-            } catch (OreoException ex) {
-                // rethrow DateTimeParseException
-                throw ex;
-            } catch (Exception ex) {
-                //unexpected errors
-                throw new OreoException("Failed to create event task", ex);
-            }
-        } else if (userInput.startsWith("delete")) {
-            int taskNum = extractNumber(userInput);
-            Task t = tasks.getTask(taskNum - 1);
-            tasks.removeTask(t);
-            storage.saveTasks(tasks);
-            return ui.deleteMessage(t, tasks);
-        } else if (userInput.startsWith("find")) {
-            String keyword = userInput.substring(5);
-            TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
-            return ui.findMessage(matchingTasks);
-        } else if (userInput.startsWith("set note")) {
-            String info = userInput.substring(11);
-            int taskNum = extractNumber(userInput);
-            Task t = tasks.getTask(taskNum - 1);
-            t.setNote(info);
-            storage.saveTasks(tasks);
-            return ui.setNoteMessage(t);
-        } else if (userInput.startsWith("get note")) {
-            int taskNum = extractNumber(userInput);
-            Task t = tasks.getTask(taskNum - 1);
-            return ui.getNoteMessage(t);
-        } else {
-            // user input is none of the valid commands above
-            return ui.invalidInputMessage();
+        case "mark":
+            return markCommand(userInput, tasks);
+        case "unmark":
+            return unmarkCommand(userInput, tasks);
+        case "todo":
+            return handleTodoCommand(userInput, tasks);
+        case "deadline":
+            return handleDeadlineCommand(userInput, tasks);
+        case "event":
+            return handleEventCommand(userInput, tasks);
+        case "delete":
+            return deleteCommand(userInput, tasks);
+        case "find":
+            return findCommand(userInput, tasks);
+        case "setnote":
+            return setNoteCommand(userInput, tasks);
+        case "getnote":
+            return getNoteCommand(userInput, tasks);
+        default:
+            return ui.invalidInputMessage(); // user input is none of the valid commands above
         }
+    }
+
+    /**
+     * Extracts and returns command from user input String.
+     * @param userInput User input command.
+     * @return Command extracted from user input.
+     */
+    private String getCommand(String userInput) {
+        if (userInput.contains(" ")) {
+            return userInput.substring(0, userInput.indexOf(" "));
+        }
+        return userInput;
+    }
+
+    /**
+     * Marks a task as completed.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after marking task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String markCommand(String userInput, TaskList tasks) throws OreoException {
+        int taskNum = extractNumber(userInput);
+        Task t = tasks.getTask(taskNum - 1);
+        t.setIsCompleted(true);
+        storage.saveTasks(tasks);
+        return ui.markMessage(t);
+    }
+
+    /**
+     * Marks a task as not completed.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after unmarking task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String unmarkCommand(String userInput, TaskList tasks) throws OreoException {
+        int taskNum = extractNumber(userInput);
+        Task t = tasks.getTask(taskNum - 1);
+        t.setIsCompleted(false);
+        storage.saveTasks(tasks);
+        return ui.unmarkMessage(t);
+    }
+
+    /**
+     * Adds a Todo task to the list of tasks.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after adding task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String handleTodoCommand(String userInput, TaskList tasks) throws OreoException {
+        String name = userInput.substring("todo".length()).trim();
+        if (name.isEmpty()) {
+            throw new OreoException("The description of a todo cannot be empty.");
+        }
+        Task t = new Todo(name);
+        tasks.addTask(t);
+        storage.saveTasks(tasks);
+        return ui.taskMessage(t, tasks);
+    }
+
+    /**
+     * Adds a Deadline task to the list of tasks.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after adding task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String handleDeadlineCommand(String userInput, TaskList tasks) throws OreoException {
+        try {
+            // extracts task name and due date
+            String[] parts = userInput.split(" /by ");
+            if (parts.length < 2) {
+                throw new OreoException("Please provide both a task name and due date.");
+            }
+            String name = parts[0].substring("deadline".length()).trim();
+            String byStr = parts[1].trim();
+            if (name.isEmpty() || byStr.isEmpty()) {
+                throw new OreoException("The name and due date of a deadline cannot be empty. "
+                        + "Please follow the format: deadline <task name> /by <due date>. "
+                        + "e.g. deadline return book /by 17-11-2025");
+            }
+
+            try {
+                LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
+                Task t = new Deadline(name, byDateTime);
+                tasks.addTask(t);
+                storage.saveTasks(tasks);
+                return ui.taskMessage(t, tasks);
+            } catch (DateTimeParseException e) {
+                throw new OreoException("Invalid date format. "
+                        + "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
+            }
+        } catch (OreoException ex) {
+            // rethrow DateTimeParseException
+            throw ex;
+        } catch (Exception ex) {
+            // unexpected errors
+            throw new OreoException("Failed to create deadline task", ex);
+        }
+    }
+
+    /**
+     * Adds an Event task to the list of tasks.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after adding task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String handleEventCommand(String userInput, TaskList tasks) throws OreoException {
+        try {
+            // extracts task name, start date and end date
+            String[] parts = userInput.split(" /from | /to ");
+            if (parts.length < 3 || parts[1].isEmpty() || parts[2].isEmpty()) {
+                throw new OreoException("Please provide a task name, start date and end date.");
+            }
+            String name = parts[0].substring("event".length()).trim();
+            String fromStr = parts[1].trim();
+            String toStr = parts[2].trim();
+            if (name.isEmpty() || fromStr.isEmpty() || toStr.isEmpty()) {
+                throw new OreoException("The name, start date and end date of an event cannot be empty. "
+                        + "Please follow the format: event <task name> /from <start date> /to <end date>. "
+                        + "e.g. event project meeting /from 17-11-2025 /to 19-11-2025");
+            }
+
+            try {
+                LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
+                LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
+                Task t = new Event(name, fromDateTime, toDateTime);
+                tasks.addTask(t);
+                storage.saveTasks(tasks);
+                return ui.taskMessage(t, tasks);
+            } catch (DateTimeParseException e) {
+                throw new OreoException("Invalid date format. "
+                        + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
+            }
+        } catch (OreoException ex) {
+            // rethrow DateTimeParseException
+            throw ex;
+        } catch (Exception ex) {
+            //unexpected errors
+            throw new OreoException("Failed to create event task", ex);
+        }
+    }
+
+    /**
+     * Deletes a task from the list of tasks.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after deleting task.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String deleteCommand(String userInput, TaskList tasks) throws OreoException {
+        int taskNum = extractNumber(userInput);
+        Task t = tasks.getTask(taskNum - 1);
+        tasks.removeTask(t);
+        storage.saveTasks(tasks);
+        return ui.deleteMessage(t, tasks);
+    }
+
+    /**
+     * Finds tasks that match a keyword search.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after finding tasks.
+     */
+    private String findCommand(String userInput, TaskList tasks) {
+        String keyword = userInput.substring("find".length()).trim();
+        TaskList matchingTasks = tasks.findTaskByKeywordSearch(keyword);
+        return ui.findMessage(matchingTasks);
+    }
+
+    /**
+     * Sets a note to a task.
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after setting note.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String setNoteCommand(String userInput, TaskList tasks) throws OreoException {
+        String[] parts = userInput.split(" ", 3);
+        if (parts.length < 3) {
+            throw new OreoException("Please provide both a task number and note content.");
+        }
+        String info = parts[2].trim();
+        if (info.isEmpty()) {
+            throw new OreoException("The content of a note cannot be empty.");
+        }
+        int taskNum = extractNumber(parts[1]);
+        Task t = tasks.getTask(taskNum - 1);
+        t.setNote(info);
+        storage.saveTasks(tasks);
+        return ui.setNoteMessage(t);
+    }
+
+    /**
+     * Gets the note of a task (if any).
+     * @param userInput User input command.
+     * @param tasks List of tasks.
+     * @return Message to be shown to user after getting note.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    private String getNoteCommand(String userInput, TaskList tasks) throws OreoException {
+        int taskNum = extractNumber(userInput);
+        Task t = tasks.getTask(taskNum - 1);
+        return ui.getNoteMessage(t);
     }
 
     /**

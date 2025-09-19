@@ -81,56 +81,101 @@ public class Storage {
         Scanner s = new Scanner(f);
         while (s.hasNext()) {
             String task = s.nextLine();
-            boolean isCompleted;
-            String name;
             Task t;
-            switch (task.charAt(0)) {
-            case 'T': // todo task
-                name = task.substring(4, task.lastIndexOf("|"));
-                t = new Todo(name);
-                isCompleted = (task.charAt(2) == '1');
-                t.setIsCompleted(isCompleted);
-                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
-                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
-                    t.setNote(noteInfo);
-                }
-                tasks.add(t);
+            String[] parts = task.split("\\|");
+            if (parts.length < 3) { // guard clause for invalid format
+                throw new OreoException("The saved file of tasks has an invalid format :o");
+            }
+            String type = parts[0];
+            String status = parts[1];
+            String name = parts[2];
+            boolean isCompleted = (status.equals("1"));
+
+            switch (type) {
+            case "T": // todo task
+                t = parseTodo(parts, isCompleted, name);
                 break;
-            case 'D': // deadline task
-                name = task.substring(4, task.indexOf("|", 4));
-                String byStr = task.substring(task.indexOf("|", 4) + 1, task.lastIndexOf("|"));
-                LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
-                t = new Deadline(name, byDateTime);
-                isCompleted = (task.charAt(2) == '1');
-                t.setIsCompleted(isCompleted);
-                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
-                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
-                    t.setNote(noteInfo);
-                }
-                tasks.add(t);
+            case "D": // deadline task
+                t = parseDeadline(parts, isCompleted, name);
                 break;
-            case 'E': // event task
-                name = task.substring(4, task.indexOf("|", 4));
-                String fromStr = task.substring(4 + name.length() + 1,
-                        task.indexOf("|", name.length() + 5));
-                String toStr = task.substring(task.indexOf("|", name.length() + 5) + 1,
-                        task.lastIndexOf("|"));
-                LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
-                LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
-                t = new Event(name, fromDateTime, toDateTime);
-                isCompleted = (task.charAt(2) == '1');
-                t.setIsCompleted(isCompleted);
-                if (task.lastIndexOf("|") + 1 != task.length()) { // means the task has a note attached to it
-                    String noteInfo = task.substring(task.lastIndexOf("|") + 1);
-                    t.setNote(noteInfo);
-                }
-                tasks.add(t);
+            case "E": // event task
+                t = parseEvent(parts, isCompleted, name);
                 break;
             default: // invalid
                 throw new OreoException("The saved file of tasks has an invalid format :o");
             }
+            tasks.add(t);
         }
         return tasks;
+    }
+
+    /**
+     * Parses a line from the saved tasks file that represents a Todo task.
+     * @param parts Split parts of the line from the saved tasks file.
+     * @param isCompleted Whether the task is completed.
+     * @param name Name of the todo task.
+     * @return The Todo task represented by the line.
+     */
+    private static Task parseTodo(String[] parts, boolean isCompleted, String name) {
+        Task t = new Todo(name);
+        t.setIsCompleted(isCompleted);
+
+        // check if there is a note attached to the task
+        if (parts.length > 3) {
+            String noteInfo = parts[3].trim();
+            if (!noteInfo.isEmpty()) {
+                t.setNote(noteInfo);
+            }
+        }
+        return t;
+    }
+
+    /**
+     * Parses a line from the saved tasks file that represents a Deadline task.
+     * @param parts Split parts of the line from the saved tasks file.
+     * @param isCompleted Whether the task is completed.
+     * @param name Name of the deadline task.
+     * @return The Deadline task represented by the line.
+     */
+    private static Task parseDeadline(String[] parts, boolean isCompleted, String name) {
+        String byStr = parts[3];
+        LocalDate byDateTime = LocalDate.parse(byStr, READ_DATE_FORMAT);
+        Task t = new Deadline(name, byDateTime);
+        t.setIsCompleted(isCompleted);
+
+        // check if there is a note attached to the task
+        if (parts.length > 4) {
+            String noteInfo = parts[3].trim();
+            if (!noteInfo.isEmpty()) {
+                t.setNote(noteInfo);
+            }
+        }
+        return t;
+    }
+
+    /**
+     * Parses a line from the saved tasks file that represents an Event task.
+     * @param parts Split parts of the line from the saved tasks file.
+     * @param isCompleted Whether the task is completed.
+     * @param name Name of the event task.
+     * @return The Event task represented by the line.
+     */
+    private static Task parseEvent(String[] parts, boolean isCompleted, String name) {
+        String fromStr = parts[3];
+        String toStr = parts[4];
+        LocalDate fromDateTime = LocalDate.parse(fromStr, READ_DATE_FORMAT);
+        LocalDate toDateTime = LocalDate.parse(toStr, READ_DATE_FORMAT);
+        Task t = new Event(name, fromDateTime, toDateTime);
+        t.setIsCompleted(isCompleted);
+
+        // check if there is a note attached to the task
+        if (parts.length > 5) {
+            String noteInfo = parts[3].trim();
+            if (!noteInfo.isEmpty()) {
+                t.setNote(noteInfo);
+            }
+        }
+        return t;
     }
 
     /**

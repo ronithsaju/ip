@@ -1,5 +1,8 @@
 package oreo;
 
+import java.util.ArrayList;
+
+import oreo.task.Task;
 import oreo.ui.Ui;
 import oreo.util.Parser;
 import oreo.util.Storage;
@@ -20,8 +23,9 @@ public class Oreo {
         Ui ui = new Ui();
         Storage storage = new Storage();
         parser = new Parser(ui, storage);
-        if (storage.loadTasks() != null) { // if a saved tasks file exists
-            tasks = new TaskList(storage.loadTasks());
+        ArrayList<Task> loadedTasks = storage.loadTasks();
+        if (loadedTasks != null) { // if a saved tasks file exists
+            tasks = new TaskList(loadedTasks);
         } else {
             tasks = new TaskList();
         }
