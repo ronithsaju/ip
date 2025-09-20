@@ -37,7 +37,9 @@ public class MainWindow extends AnchorPane {
         welcomeMessage();
     }
 
-    /** Injects the Oreo instance */
+    /**
+     * Injects the Oreo instance.
+     */
     public void setOreo(Oreo o) {
         oreo = o;
     }
@@ -47,7 +49,7 @@ public class MainWindow extends AnchorPane {
      * the dialog container. Clears the user input after processing.
      */
     @FXML
-    private void handleUserInput() throws OreoException {
+    private void handleUserInput() {
         String input = userInput.getText();
         String response;
         boolean isError = false;
@@ -66,6 +68,9 @@ public class MainWindow extends AnchorPane {
         userInput.clear();
     }
 
+    /**
+     * Prints the welcome message when the application starts.
+     */
     private void welcomeMessage() {
         String welcome = "Hello! I'm Oreo\n" + "What can I do for you?";
         dialogContainer.getChildren().addAll(

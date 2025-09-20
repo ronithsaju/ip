@@ -24,6 +24,11 @@ public class DialogBox extends HBox {
     @FXML
     private ImageView displayPicture;
 
+    /**
+     * Creates a DialogBox with the specified text and image.
+     * @param text The text to be displayed.
+     * @param img The image to be displayed.
+     */
     private DialogBox(String text, Image img) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
@@ -40,23 +45,39 @@ public class DialogBox extends HBox {
 
     /**
      * Flips the dialog box such that the ImageView is on the left and text on the right.
+     * @param isError True if the dialog box represents an error message, false otherwise.
      */
     private void flip(boolean isError) {
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
-        if (isError) { // red dialog label for error messages
+
+        // red dialog label for error messages
+        if (isError) {
             dialog.getStyleClass().add("error-reply-label");
             return;
         }
         dialog.getStyleClass().add("reply-label");
     }
 
+    /**
+     * Creates a dialog box for the user.
+     * @param text The user text to be displayed.
+     * @param img The user image to be displayed.
+     * @return A dialog box for the user.
+     */
     public static DialogBox getUserDialog(String text, Image img) {
         return new DialogBox(text, img);
     }
 
+    /**
+     * Creates a dialog box for Oreo.
+     * @param text The Oreo text to be displayed.
+     * @param img The Oreo image to be displayed.
+     * @param isError True if the dialog box represents an error message, false otherwise.
+     * @return A dialog box for Oreo.
+     */
     public static DialogBox getOreoDialog(String text, Image img, boolean isError) {
         var db = new DialogBox(text, img);
         db.flip(isError);

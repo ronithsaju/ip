@@ -13,7 +13,7 @@ import oreo.task.Todo;
 import oreo.ui.Ui;
 
 /**
- * Parses user input commands and performs the respective actions needed
+ * Parses user input commands and performs the respective actions needed.
  */
 public class Parser {
     /** Formatter for date received from user */

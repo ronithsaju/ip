@@ -22,6 +22,10 @@ public class Main extends Application {
     public Main() throws OreoException {
     }
 
+    /**
+     * The main entry point for all JavaFX applications.
+     * @param stage The primary stage for this application
+     */
     @Override
     public void start(Stage stage) {
         try {
@@ -31,6 +35,7 @@ public class Main extends Application {
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setOreo(oreo); // inject the Oreo instance
 
+            // add icon and title to the window
             stage.setTitle("Oreo");
             Image oreoIcon = new Image("/images/oreo.png");
             stage.getIcons().add(oreoIcon);
@@ -41,6 +46,9 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Stops the application.
+     */
     public static void end() {
         Platform.exit();
     }

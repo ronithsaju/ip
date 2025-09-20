@@ -5,6 +5,10 @@ package oreo.task;
  */
 public class Todo extends Task {
 
+    /**
+     * Constructs a Todo task with the given name.
+     * @param name The name of the Todo task.
+     */
     public Todo(String name) {
         super(name);
     }
