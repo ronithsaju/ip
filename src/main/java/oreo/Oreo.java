@@ -21,7 +21,7 @@ public class Oreo {
      */
     public Oreo() throws OreoException {
         Ui ui = new Ui();
-        Storage storage = new Storage();
+        Storage storage = new Storage("data/oreo.txt");
         parser = new Parser(ui, storage);
         ArrayList<Task> loadedTasks = storage.loadTasks();
         if (loadedTasks != null) { // if a saved tasks file exists

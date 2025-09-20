@@ -23,13 +23,14 @@ import oreo.task.Todo;
  */
 public class Storage {
     private static final String DIR = "data";
-    private static final String FILE_PATH = "data/oreo.txt";
     private static final DateTimeFormatter READ_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final String strFilePath;
 
     /**
      * Ensures directory and text file to store tasks exists.
      */
-    public Storage() throws OreoException {
+    public Storage(String strFilePath) throws OreoException {
+        this.strFilePath = strFilePath;
         ensureFileExists();
     }
 
@@ -44,7 +45,7 @@ public class Storage {
                 Files.createDirectories(dirPath);
             }
 
-            Path filePath = Paths.get(FILE_PATH);
+            Path filePath = Paths.get(strFilePath);
             if (Files.notExists(filePath)) {
                 Files.createFile(filePath);
             }
@@ -73,7 +74,7 @@ public class Storage {
      * @throws OreoException Custom exception made for the chatbot.
      */
     private ArrayList<Task> readTasksFromFile() throws FileNotFoundException, OreoException {
-        File f = new File(FILE_PATH);
+        File f = new File(strFilePath);
         if (!f.exists()) {
             return null; // skips everything if there is no saved tasks file
         }
@@ -197,7 +198,7 @@ public class Storage {
      * @throws IOException If file does not exist or cannot be written into.
      */
     private void writeTasksToFile(TaskList tl) throws IOException {
-        FileWriter fw = new FileWriter(FILE_PATH);
+        FileWriter fw = new FileWriter(strFilePath);
         StringBuilder textToAdd = new StringBuilder();
         for (Task t : tl.getTasks()) {
             textToAdd.append(t.saveFormat());
