@@ -67,14 +67,6 @@ public class Ui {
     }
 
     /**
-     * Returns an invalid input message.
-     */
-    public String invalidInputMessage() {
-        return "Invalid input!\n" + "Please use any of the following commands: "
-                + "list, mark, unmark, todo, deadline, event, delete, find or bye";
-    }
-
-    /**
      * Returns message that the note has been added to the task.
      * @param t Task assigned to the note.
      */

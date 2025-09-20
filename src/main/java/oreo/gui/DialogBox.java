@@ -41,11 +41,15 @@ public class DialogBox extends HBox {
     /**
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
-    private void flip() {
+    private void flip(boolean isError) {
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
+        if (isError) { // red dialog label for error messages
+            dialog.getStyleClass().add("error-reply-label");
+            return;
+        }
         dialog.getStyleClass().add("reply-label");
     }
 
@@ -53,9 +57,9 @@ public class DialogBox extends HBox {
         return new DialogBox(text, img);
     }
 
-    public static DialogBox getOreoDialog(String text, Image img) {
+    public static DialogBox getOreoDialog(String text, Image img, boolean isError) {
         var db = new DialogBox(text, img);
-        db.flip();
+        db.flip(isError);
         return db;
     }
 }

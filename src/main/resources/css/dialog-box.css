@@ -12,6 +12,13 @@
     -fx-border-radius: 1em 1em 1em 0;
 }
 
+.error-reply-label {
+    -fx-background-color: linear-gradient(to bottom right, #ffb3c1, #ff8fa3);
+    -fx-border-color: #ff4d6d;
+    -fx-background-radius: 1em 1em 1em 0;
+    -fx-border-radius: 1em 1em 1em 0;
+}
+
 #displayPicture {
     /* Shadow effect on image. */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);

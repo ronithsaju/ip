@@ -49,12 +49,19 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() throws OreoException {
         String input = userInput.getText();
-        String response = oreo.getResponse(input);
+        String response;
+        boolean isError = false;
+        try {
+            response = oreo.getResponse(input);
+        } catch (OreoException e) {
+            response = e.getMessage();
+            isError = true;
+        }
         assert userImage != null : "User image not found";
         assert oreoImage != null : "Oreo image not found";
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getOreoDialog(response, oreoImage)
+                DialogBox.getOreoDialog(response, oreoImage, isError)
         );
         userInput.clear();
     }
@@ -62,7 +69,7 @@ public class MainWindow extends AnchorPane {
     private void welcomeMessage() {
         String welcome = "Hello! I'm Oreo\n" + "What can I do for you?";
         dialogContainer.getChildren().addAll(
-                DialogBox.getOreoDialog(welcome, oreoImage)
+                DialogBox.getOreoDialog(welcome, oreoImage, false)
         );
     }
 }

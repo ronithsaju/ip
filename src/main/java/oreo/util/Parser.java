@@ -64,8 +64,10 @@ public class Parser {
             return setNoteCommand(userInput, tasks);
         case "getnote":
             return getNoteCommand(userInput, tasks);
-        default:
-            return ui.invalidInputMessage(); // user input is none of the valid commands above
+        default: // user input is none of the valid commands above
+            throw new OreoException("Invalid input!\n" + "Please use any of the following commands: "
+                    + "list, mark, unmark, todo, deadline, event, delete, find, "
+                    + "setnote, getnote or bye");
         }
     }
 
@@ -90,6 +92,7 @@ public class Parser {
      */
     private String markCommand(String userInput, TaskList tasks) throws OreoException {
         int taskNum = extractNumber(userInput);
+        validateTaskNumber(taskNum, tasks);
         Task t = tasks.getTask(taskNum - 1);
         t.setIsCompleted(true);
         storage.saveTasks(tasks);
@@ -105,6 +108,7 @@ public class Parser {
      */
     private String unmarkCommand(String userInput, TaskList tasks) throws OreoException {
         int taskNum = extractNumber(userInput);
+        validateTaskNumber(taskNum, tasks);
         Task t = tasks.getTask(taskNum - 1);
         t.setIsCompleted(false);
         storage.saveTasks(tasks);
@@ -121,7 +125,7 @@ public class Parser {
     private String handleTodoCommand(String userInput, TaskList tasks) throws OreoException {
         String name = userInput.substring("todo".length()).trim();
         if (name.isEmpty()) {
-            throw new OreoException("The description of a todo cannot be empty.");
+            throw new OreoException("The name of a todo cannot be empty.");
         }
         Task t = new Todo(name);
         tasks.addTask(t);
@@ -137,36 +141,28 @@ public class Parser {
      * @throws OreoException Custom exception made for the chatbot.
      */
     private String handleDeadlineCommand(String userInput, TaskList tasks) throws OreoException {
-        try {
-            // extracts task name and due date
-            String[] parts = userInput.split(" /by ");
-            if (parts.length < 2) {
-                throw new OreoException("Please provide both a task name and due date.");
-            }
-            String name = parts[0].substring("deadline".length()).trim();
-            String byStr = parts[1].trim();
-            if (name.isEmpty() || byStr.isEmpty()) {
-                throw new OreoException("The name and due date of a deadline cannot be empty. "
-                        + "Please follow the format: deadline <task name> /by <due date>. "
-                        + "e.g. deadline return book /by 17-11-2025");
-            }
+        // extracts task name and due date
+        String[] parts = userInput.split(" /by ");
+        if (parts.length < 2) {
+            throw new OreoException("Please provide both a deadline name and due date.");
+        }
+        String name = parts[0].substring("deadline".length()).trim();
+        String byStr = parts[1].trim();
+        if (name.isEmpty() || byStr.isEmpty()) {
+            throw new OreoException("The name and due date of a deadline cannot be empty. "
+                    + "Please follow the format: deadline <task name> /by <due date>. "
+                    + "e.g. deadline return book /by 17-11-2025");
+        }
 
-            try {
-                LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
-                Task t = new Deadline(name, byDateTime);
-                tasks.addTask(t);
-                storage.saveTasks(tasks);
-                return ui.taskMessage(t, tasks);
-            } catch (DateTimeParseException e) {
-                throw new OreoException("Invalid date format. "
-                        + "Please follow DD/MM/YYYY. e.g. 17/11/2002", e);
-            }
-        } catch (OreoException ex) {
-            // rethrow DateTimeParseException
-            throw ex;
-        } catch (Exception ex) {
-            // unexpected errors
-            throw new OreoException("Failed to create deadline task", ex);
+        try {
+            LocalDate byDateTime = LocalDate.parse(byStr, DATE_FORMAT);
+            Task t = new Deadline(name, byDateTime);
+            tasks.addTask(t);
+            storage.saveTasks(tasks);
+            return ui.taskMessage(t, tasks);
+        } catch (DateTimeParseException e) {
+            throw new OreoException("Invalid date format. "
+                    + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
         }
     }
 
@@ -178,38 +174,30 @@ public class Parser {
      * @throws OreoException Custom exception made for the chatbot.
      */
     private String handleEventCommand(String userInput, TaskList tasks) throws OreoException {
-        try {
-            // extracts task name, start date and end date
-            String[] parts = userInput.split(" /from | /to ");
-            if (parts.length < 3 || parts[1].isEmpty() || parts[2].isEmpty()) {
-                throw new OreoException("Please provide a task name, start date and end date.");
-            }
-            String name = parts[0].substring("event".length()).trim();
-            String fromStr = parts[1].trim();
-            String toStr = parts[2].trim();
-            if (name.isEmpty() || fromStr.isEmpty() || toStr.isEmpty()) {
-                throw new OreoException("The name, start date and end date of an event cannot be empty. "
-                        + "Please follow the format: event <task name> /from <start date> /to <end date>. "
-                        + "e.g. event project meeting /from 17-11-2025 /to 19-11-2025");
-            }
+        // extracts task name, start date and end date
+        String[] parts = userInput.split(" /from | /to ");
+        if (parts.length < 3 || parts[1].isEmpty() || parts[2].isEmpty()) {
+            throw new OreoException("Please provide an event name, start date and end date.");
+        }
+        String name = parts[0].substring("event".length()).trim();
+        String fromStr = parts[1].trim();
+        String toStr = parts[2].trim();
+        if (name.isEmpty() || fromStr.isEmpty() || toStr.isEmpty()) {
+            throw new OreoException("The name, start date and end date of an event cannot be empty. "
+                    + "Please follow the format: event <task name> /from <start date> /to <end date>. "
+                    + "e.g. event hackathon /from 17-11-2025 /to 18-11-2025");
+        }
 
-            try {
-                LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
-                LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
-                Task t = new Event(name, fromDateTime, toDateTime);
-                tasks.addTask(t);
-                storage.saveTasks(tasks);
-                return ui.taskMessage(t, tasks);
-            } catch (DateTimeParseException e) {
-                throw new OreoException("Invalid date format. "
-                        + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
-            }
-        } catch (OreoException ex) {
-            // rethrow DateTimeParseException
-            throw ex;
-        } catch (Exception ex) {
-            //unexpected errors
-            throw new OreoException("Failed to create event task", ex);
+        try {
+            LocalDate fromDateTime = LocalDate.parse(fromStr, DATE_FORMAT);
+            LocalDate toDateTime = LocalDate.parse(toStr, DATE_FORMAT);
+            Task t = new Event(name, fromDateTime, toDateTime);
+            tasks.addTask(t);
+            storage.saveTasks(tasks);
+            return ui.taskMessage(t, tasks);
+        } catch (DateTimeParseException e) {
+            throw new OreoException("Invalid date format. "
+                    + "Please follow DD-MM-YYYY. e.g. 17-11-2002", e);
         }
     }
 
@@ -222,6 +210,7 @@ public class Parser {
      */
     private String deleteCommand(String userInput, TaskList tasks) throws OreoException {
         int taskNum = extractNumber(userInput);
+        validateTaskNumber(taskNum, tasks);
         Task t = tasks.getTask(taskNum - 1);
         tasks.removeTask(t);
         storage.saveTasks(tasks);
@@ -257,6 +246,7 @@ public class Parser {
             throw new OreoException("The content of a note cannot be empty.");
         }
         int taskNum = extractNumber(parts[1]);
+        validateTaskNumber(taskNum, tasks);
         Task t = tasks.getTask(taskNum - 1);
         t.setNote(info);
         storage.saveTasks(tasks);
@@ -272,6 +262,7 @@ public class Parser {
      */
     private String getNoteCommand(String userInput, TaskList tasks) throws OreoException {
         int taskNum = extractNumber(userInput);
+        validateTaskNumber(taskNum, tasks);
         Task t = tasks.getTask(taskNum - 1);
         return ui.getNoteMessage(t);
     }
@@ -286,6 +277,18 @@ public class Parser {
         try {
             return Integer.parseInt(input.replaceAll("[^0-9]", ""));
         } catch (NumberFormatException e) {
+            throw new OreoException("Please provide a valid task number.");
+        }
+    }
+
+    /**
+     * Throws exception if the task number provided is invalid.
+     * @param taskNum Task number provided by user.
+     * @param tasks List of tasks.
+     * @throws OreoException Custom exception made for the chatbot.
+     */
+    public void validateTaskNumber(int taskNum, TaskList tasks) throws OreoException {
+        if (taskNum < 1 || taskNum > tasks.getSize()) {
             throw new OreoException("Please provide a valid task number.");
         }
     }
